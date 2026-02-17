@@ -108,9 +108,7 @@ function encodeProverKey(value: SnarkKey): Uint8Array {
     case KeyType.StepProvingKey: {
       let index = value[1][1];
       if (!isWasmBackend()) return (wasm as any).prover_index_fp_serialize(index);
-      return wasm.caml_pasta_fp_plonk_index_encode(
-        (wasm as any).prover_index_fp_deserialize((wasm as any).prover_index_fp_serialize(index))
-      );
+      return wasm.caml_pasta_fp_plonk_index_encode(index);
     }
     case KeyType.StepVerificationKey: {
       let vkMl = value[1];
@@ -122,9 +120,7 @@ function encodeProverKey(value: SnarkKey): Uint8Array {
     case KeyType.WrapProvingKey: {
       let index = value[1][1];
       if (!isWasmBackend()) return (wasm as any).prover_index_fq_serialize(index);
-      return wasm.caml_pasta_fq_plonk_index_encode(
-        (wasm as any).prover_index_fq_deserialize((wasm as any).prover_index_fq_serialize(index))
-      );
+      return wasm.caml_pasta_fq_plonk_index_encode(index);
     }
     case KeyType.WrapVerificationKey: {
       let vk = value[1];

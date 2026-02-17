@@ -8,6 +8,10 @@ let wasm;
 try {
   const require_ = createRequire(import.meta.url);
   wasm = require_(slug);
+  wasm.__kimchi_backend = 'native';
+  if (typeof globalThis !== 'undefined') {
+    globalThis.__kimchi_backend = 'native';
+  }
 } catch (e) {
   throw new Error(
     `Native backend requested but '${slug}' is not installed.\n` +
