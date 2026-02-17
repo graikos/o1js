@@ -4,6 +4,15 @@ type Backend = 'wasm' | 'native';
 
 let locked = false;
 
+// eagerly set the backend preference from env var so that
+// node_backend.js (which reads globalThis directly) picks it up
+if ((globalThis as any).__o1js_backend_preference === undefined) {
+  let env = getBackendFromEnv();
+  if (env !== undefined) {
+    (globalThis as any).__o1js_backend_preference = env;
+  }
+}
+
 /**
  * Set the backend to use for cryptographic operations such as proving.
  *
@@ -46,6 +55,13 @@ function setBackend(backend: Backend) {
  */
 function getBackendPreference(): Backend {
   return (globalThis as any).__o1js_backend_preference ?? 'wasm';
+}
+
+function getBackendFromEnv(): Backend | undefined {
+  let value =
+    typeof process !== 'undefined' ? process.env.O1JS_BACKEND : undefined;
+  if (value === 'wasm' || value === 'native') return value;
+  return undefined;
 }
 
 function lockBackend() {
