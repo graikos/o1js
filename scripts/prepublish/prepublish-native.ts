@@ -13,8 +13,12 @@ const packageJsonPath = join(packagePath, 'package.json');
 
 const pkgJson = await readFile(packageJsonPath, 'utf8').then(JSON.parse);
 
-// remove optionalDependencies, might not need this at all tbd
-delete pkgJson.optionalDependencies;
+const nativeVersion = pkgJson['o1js-internal']?.['native-version'];
+if (nativeVersion) {
+  pkgJson.optionalDependencies = { '@o1js/native': nativeVersion };
+} else {
+  delete pkgJson.optionalDependencies;
+}
 
 if (write) {
   await writeFile(packageJsonPath, JSON.stringify(pkgJson, null, 2));

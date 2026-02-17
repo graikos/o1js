@@ -130,8 +130,7 @@
     "typedoc": "^0.28.5",
     "typedoc-plugin-markdown": "^4.6.4",
     "typedoc-plugin-merge-modules": "^7.0.0",
-    "typescript": "^5.4.5",
-    "@o1js/native": "0.0.1-dev.5"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "blakejs": "1.2.1",
