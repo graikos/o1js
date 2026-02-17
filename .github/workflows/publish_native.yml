@@ -1,6 +1,11 @@
 name: Native
 on:
   workflow_dispatch:
+    inputs:
+      npm-tag:
+        description: 'npm dist-tag (e.g. experimental, dev, latest)'
+        required: false
+        default: 'experimental'
 
 jobs:
   publish-native-packages:
@@ -64,6 +69,7 @@ jobs:
       - name: Publish native package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TAG: ${{ inputs.npm-tag }}
         run: |
           set -Eeuxo pipefail
 
