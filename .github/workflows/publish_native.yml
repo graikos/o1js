@@ -102,7 +102,7 @@ jobs:
           NPM_TAG: ${{ inputs.npm-tag }}
         run: |
           set -Eeuxo pipefail
-          for dir in native/*/; do
+          for dir in ./native/*/; do
             if [ -f "$dir/package.json" ] && [ "$(basename $dir)" != "meta" ]; then
               PACKAGE_NAME=$(jq -r .name "$dir/package.json")
               VERSION=$(jq -r .version "$dir/package.json")
@@ -120,7 +120,7 @@ jobs:
           NPM_TAG: ${{ inputs.npm-tag }}
         run: |
           set -Eeuxo pipefail
-          META_DIR=native/meta
+          META_DIR=./native/meta
           if [ -f "$META_DIR/package.json" ]; then
             PACKAGE_NAME=$(jq -r .name "$META_DIR/package.json")
             VERSION=$(jq -r .version "$META_DIR/package.json")
