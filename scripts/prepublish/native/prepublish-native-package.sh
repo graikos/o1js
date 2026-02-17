@@ -26,6 +26,9 @@ cat > $META_PATH/package.json <<EOF
   "name": "@o1js/native",
   "version": "0.0.0",
   "description": "Native bindings for o1js. Install alongside o1js to enable the native backend.",
+  "repository": {
+    "url": "git+https://github.com/o1-labs/o1js.git"
+  },
   "optionalDependencies": {
     "@o1js/native-darwin-arm64": "0.0.0",
     "@o1js/native-darwin-x64": "0.0.0",
