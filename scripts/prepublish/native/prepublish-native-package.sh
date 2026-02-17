@@ -32,6 +32,7 @@ cat > $META_PATH/package.json <<EOF
   "optionalDependencies": {
     "@o1js/native-darwin-arm64": "0.0.0",
     "@o1js/native-darwin-x64": "0.0.0",
+    "@o1js/native-linux-x64": "0.0.0",
     "@o1js/native-linux-arm64": "0.0.0",
     "@o1js/native-win32-x64": "0.0.0"
   }
