@@ -81,7 +81,6 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
 
       - name: Download all native artifacts
         uses: actions/download-artifact@v4
