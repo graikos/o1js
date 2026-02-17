@@ -1,6 +1,6 @@
 import { Field, ZkProgram, Cache, verify, setBackend } from 'o1js';
 
-setBackend('wasm');
+setBackend('native');
 
 let MyProgram = ZkProgram({
   name: 'example-with-output',
@@ -17,13 +17,19 @@ let MyProgram = ZkProgram({
   },
 });
 
-console.time('compile (without cache)');
-let { verificationKey } = await MyProgram.compile({ cache: Cache.None });
-console.timeEnd('compile (without cache)');
+const cache = Cache.FileSystem('/tmp/o1js/cache', true); // <- debug on
 
-console.time('proving');
+console.time('compile (with cache)');
+let { verificationKey } = await MyProgram.compile({ cache });
+console.timeEnd('compile (with cache)');
+
+console.time('proving 1');
 let result = await MyProgram.baseCase();
-console.timeEnd('proving');
+console.timeEnd('proving 1');
+
+console.time('proving 2');
+let result2 = await MyProgram.baseCase();
+console.timeEnd('proving 2');
 
 console.log('verifying');
 let ok = await verify(result.proof, verificationKey);
