@@ -80,7 +80,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
 
       - name: Download all native artifacts
@@ -97,6 +96,11 @@ jobs:
           done
           echo "Collected packages:"
           ls -la native/*/package.json
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish platform packages
         env:
