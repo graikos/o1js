@@ -12,15 +12,26 @@ jobs:
     name: Build (${{ matrix.os }})
     strategy:
       matrix:
-        os: [
-          macos-latest,
-          macos-15-intel,
-          ubuntu-latest,
-          ubuntu-22.04-arm,
-          # windows-latest,
-        ]
+        include:
+          - os: macos-latest
+          - os: macos-15-intel
+          - os: ubuntu-latest
+            container: debian:bullseye
+          - os: ubuntu-22.04-arm
+            container: debian:bullseye
+          # - os: windows-latest
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container || '' }}
     steps:
+      - name: Install build prerequisites
+        if: matrix.container
+        run: |
+          apt-get update
+          apt-get install -y \
+            git curl build-essential pkg-config m4 \
+            libgmp-dev libffi-dev zlib1g-dev \
+            ca-certificates sudo unzip jq
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -32,6 +43,7 @@ jobs:
       - uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: 4.14.2
+          opam-disable-sandboxing: true
       - uses: actions/cache@v4
         id: cache-opam
         with:
