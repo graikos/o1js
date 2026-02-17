@@ -22,6 +22,9 @@ jobs:
           # - os: windows-latest
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container || '' }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Install build prerequisites
         if: matrix.container
