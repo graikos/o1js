@@ -147,15 +147,6 @@ function writeCache(cache: Cache, header: CacheHeader, value: Uint8Array) {
   }
 }
 
-function isErrno(error: unknown, code: string) {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    (error as { code?: unknown }).code === code
-  );
-}
-
 const None: Cache = {
   read() {
     throw Error('not available');
@@ -172,29 +163,16 @@ const FileSystem = (cacheDirectory: string, debug?: boolean): Cache => ({
 
     let headerPath = resolve(cacheDirectory, `${persistentId}.header`);
     let dataPath = resolve(cacheDirectory, persistentId);
-
-    // Read current uniqueId, return data if it matches.
-    // Missing files are expected on first run and treated as cache misses.
-    let currentId: string;
-    try {
-      currentId = readFileSync(headerPath, 'utf8');
-    } catch (error) {
-      if (isErrno(error, 'ENOENT')) return undefined;
-      throw error;
-    }
+    // read current uniqueId, return data if it matches
+    let currentId = readFileSync(headerPath, 'utf8');
     if (currentId !== uniqueId) return undefined;
 
-    try {
-      if (dataType === 'string') {
-        let string = readFileSync(dataPath, 'utf8');
-        return new TextEncoder().encode(string);
-      } else {
-        let buffer = readFileSync(dataPath);
-        return new Uint8Array(buffer.buffer);
-      }
-    } catch (error) {
-      if (isErrno(error, 'ENOENT')) return undefined;
-      throw error;
+    if (dataType === 'string') {
+      let string = readFileSync(dataPath, 'utf8');
+      return new TextEncoder().encode(string);
+    } else {
+      let buffer = readFileSync(dataPath);
+      return new Uint8Array(buffer.buffer);
     }
   },
   write({ persistentId, uniqueId, dataType }, data) {
