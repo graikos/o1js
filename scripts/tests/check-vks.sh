@@ -17,8 +17,13 @@ cd "$ROOT_DIR"
 bold "Checking verification keys for regressions"
 
 info "Running regression checks..."
-VK_TEST=1 run_cmd ./run ./tests/vk-regression/vk-regression.ts --bundle
-VK_TEST=2 run_cmd ./run ./tests/vk-regression/vk-regression.ts --bundle
+info "Backend: wasm"
+run_cmd env -u O1JS_REQUIRE_NATIVE_BINDINGS VK_TEST=1 ./run ./tests/vk-regression/vk-regression.ts --bundle
+run_cmd env -u O1JS_REQUIRE_NATIVE_BINDINGS VK_TEST=2 ./run ./tests/vk-regression/vk-regression.ts --bundle
+
+info "Backend: native"
+run_cmd env O1JS_REQUIRE_NATIVE_BINDINGS=1 VK_TEST=1 ./run ./tests/vk-regression/vk-regression.ts --bundle
+run_cmd env O1JS_REQUIRE_NATIVE_BINDINGS=1 VK_TEST=2 ./run ./tests/vk-regression/vk-regression.ts --bundle
 ok "Verification keys regression check completed"
 
 success "VK regression check complete"
