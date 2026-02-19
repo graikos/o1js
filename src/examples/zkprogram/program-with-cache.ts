@@ -17,7 +17,7 @@ let MyProgram = ZkProgram({
   },
 });
 
-const cache = Cache.FileSystem('/tmp/o1js/cache', true); // <- debug on
+const cache = Cache.FileSystem('/tmp/o1js/cache', true);
 
 console.time('compile (with cache)');
 let { verificationKey } = await MyProgram.compile({ cache });
@@ -28,7 +28,7 @@ let result = await MyProgram.baseCase();
 console.timeEnd('proving 1');
 
 console.time('proving 2');
-let result2 = await MyProgram.baseCase();
+await MyProgram.baseCase();
 console.timeEnd('proving 2');
 
 console.log('verifying');

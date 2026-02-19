@@ -7,7 +7,7 @@ import {
   initializeBindings,
   withThreadPool,
 } from '../../bindings.js';
-import { setSrsCache, unsetSrsCache } from '../../bindings/crypto/bindings/srs.js';
+import { setSrsCache, unsetSrsCache } from '../../bindings/crypto/cache.js';
 import { prefixes } from '../../bindings/crypto/constants.js';
 import { prefixToField } from '../../bindings/lib/binable.js';
 import { EmptyUndefined, EmptyVoid } from '../../bindings/lib/generic.js';

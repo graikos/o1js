@@ -1,6 +1,4 @@
-import { Field, ZkProgram, Cache, verify, setBackend } from 'o1js';
-
-setBackend('wasm');
+import { Field, ZkProgram, Cache, verify } from 'o1js';
 
 let MyProgram = ZkProgram({
   name: 'example-with-output',
