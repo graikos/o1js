@@ -106,10 +106,6 @@ try {
   }
 }
 
-if (!dump) {
-  console.log(`Comparing against canonical snapshot: ${filePath}`);
-}
-
 async function checkVk(contracts: typeof ConstraintSystems) {
   let errorStack = '';
 
