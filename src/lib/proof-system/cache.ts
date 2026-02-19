@@ -125,7 +125,7 @@ function readCache<T>(
   try {
     let result = cache.read(header);
     if (result === undefined) {
-      if (cache.debug) console.log(`cache miss: ${header.persistentId}`);
+      if (cache.debug) console.trace(`cache miss: ${header.persistentId}`);
       return undefined;
     }
     if (transform === undefined) return result as any as T;
