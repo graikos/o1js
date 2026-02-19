@@ -264,7 +264,7 @@ function proofConversionPerField(
         foreignFieldMulLookupSelector,
       ] = evalsTuple;
 
-      const lookupSortedObjs = MlArray.mapFrom(lookupSorted, (opt) =>
+      const lookupSortedObjs = MlArray.from(lookupSorted).map((opt) =>
         opt === 0 ? undefined : pointEvalsTupleToObject(opt[1])
       );
 
@@ -370,13 +370,13 @@ function proofConversionPerField(
         )
       ) as MlTuple<PointEvaluations<Uint8Array>, 15>;
 
-      const lookupSorted = MlArray.mapFrom(
+      const lookupSorted = MlArray.map(
         [
           0,
           ...asArrayLike<NapiPointEvaluationsObject | null | undefined>(evalsSource?.lookupSorted),
         ] as MlArray<NapiPointEvaluationsObject | null | undefined>,
         (x) => toMlOption(x, toPointEvals)
-      ) as MlArray<MlOption<PointEvaluations<Uint8Array>>>;
+      );
 
       const evalsBytes: ProofEvaluations<Uint8Array> = [
         0,
