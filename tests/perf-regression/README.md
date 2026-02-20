@@ -62,14 +62,14 @@ npm run regression:check-perf:native
 - **Baseline updates**: Manually trigger the workflow
   [dump-perf-baseline.yml](../../.github/workflows/dump-perf-baseline.yml) to
   run in `--dump`, regenerate the baseline, and commit it to the same branch.
-  You can choose to dump wasm, native, or both.
+  You can choose to dump wasm or native.
   - To trigger the CI workflow manually:
 
     ```bash
-    # Dump both backends
-    gh workflow run dump-perf-baseline.yml -r $(git rev-parse --abbrev-ref HEAD) -f backend=both
+    # Dump wasm baseline
+    gh workflow run dump-perf-baseline.yml -r $(git rev-parse --abbrev-ref HEAD) -f backend=wasm
 
-    # Dump only native
+    # Dump native baseline
     gh workflow run dump-perf-baseline.yml -r $(git rev-parse --abbrev-ref HEAD) -f backend=native
     ```
 
