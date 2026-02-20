@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { setBackend } from '../../src/lib/backend.js';
+import { getBackendPreference, setBackend } from '../../src/lib/backend.js';
 import { Voting_ } from '../../src/examples/zkapps/voting/voting.js';
 import { Membership_ } from '../../src/examples/zkapps/voting/membership.js';
 import { HelloWorld } from '../../src/examples/zkapps/hello-world/hello-world.js';
@@ -17,14 +17,18 @@ const skipVerificationKeys = false;
 // toggle to override caches
 const forceRecompile = false;
 
-type Backend = 'wasm' | 'native';
-let backend: Backend = process.env.O1JS_REQUIRE_NATIVE_BINDINGS ? 'native' : 'wasm';
-setBackend(backend);
-
 // usage for wasm backend:
-// env -u O1JS_REQUIRE_NATIVE_BINDINGS ./run ./tests/vk-regression/vk-regression.ts --bundle --dump ./tests/vk-regression/vk-regression.json
+// O1JS_BACKEND=wasm ./run ./tests/vk-regression/vk-regression.ts --bundle --dump ./tests/vk-regression/vk-regression.json
 // usage for native backend:
-// O1JS_REQUIRE_NATIVE_BINDINGS=1 ./run ./tests/vk-regression/vk-regression.ts --bundle
+// O1JS_BACKEND=native ./run ./tests/vk-regression/vk-regression.ts --bundle
+let backend = process.env.O1JS_BACKEND;
+if (backend !== undefined) {
+  if (backend !== 'wasm' && backend !== 'native') {
+    throw new Error(`Invalid O1JS_BACKEND='${backend}'. Expected 'wasm' or 'native'.`);
+  }
+  setBackend(backend);
+}
+
 
 let dump = process.argv[4] === '--dump';
 let jsonPath = process.argv[dump ? 5 : 4];
