@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.ref_name }}
           submodules: recursive
       - name: Build
-        uses: ./.github/actions/build
+        uses: ./.github/actions/build-wasm
       - name: Performance Regression (dump)
         env:
           TEST_TYPE: Performance Regression
