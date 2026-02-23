@@ -10,9 +10,9 @@ let filename = url !== undefined ? fileURLToPath(url) : __filename;
  * @type {import("../../compiled/node_bindings/kimchi_wasm.cjs")}
  */
 const wasm = wasm_;
-wasm.__kimchi_backend = 'wasm';
+wasm.__o1js_backend_preference = 'wasm';
 if (typeof globalThis !== 'undefined') {
-  globalThis.__kimchi_backend = 'wasm';
+  globalThis.__o1js_backend_preference = 'wasm';
 }
 
 export { wasm, withThreadPool };
