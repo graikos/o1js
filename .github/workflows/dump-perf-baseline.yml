@@ -69,18 +69,12 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
           submodules: recursive
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Build wasm (provides compiled bindings and dist/)
+        uses: ./.github/actions/build-wasm
       - name: Build native bindings
         uses: ./.github/actions/build-native
-      - name: Install dependencies and native package
-        run: |
-          npm ci
-          npm install ./native/linux-x64/
-      - name: Build o1js
-        run: npm run build
+      - name: Install native package
+        run: npm install ./native/linux-x64/
       - name: Performance Regression (dump native)
         env:
           TEST_TYPE: Performance Regression
