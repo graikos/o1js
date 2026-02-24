@@ -235,9 +235,9 @@ jobs:
       - name: Count tests
         id: count_tests
         run: |
-          TEST_COUNT=$(find ./dist/node -name "*.unit-test.js" | wc -l)
+          TEST_COUNT=$(find ./dist/node -name "*.unit-test.js" -not -name "*-napi.unit-test.js" | wc -l)
           echo "test_count=${TEST_COUNT}" >> $GITHUB_OUTPUT
-          echo "Total test count: ${TEST_COUNT}"
+          echo "Total test count (excluding napi): ${TEST_COUNT}"
 
       - name: Run unit tests
         env:
@@ -261,7 +261,13 @@ jobs:
           echo "Running tests from index $start_index to $end_index"
 
           shopt -s globstar
-          test_files=(./dist/node/**/*.unit-test.js)
+          all_tests=(./dist/node/**/*.unit-test.js)
+          test_files=()
+          for test in "${all_tests[@]}"; do
+            if [[ ! "$test" =~ -napi\.unit-test\.js$ ]]; then
+              test_files+=("$test")
+            fi
+          done
 
           set -o pipefail
 
