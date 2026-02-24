@@ -6,13 +6,14 @@ import {
   type Cache,
   type CacheHeader,
 } from '../../../lib/proof-system/cache.js';
+import { srsCache as cache } from '../cache.js';
 import { assert } from '../../../lib/util/errors.js';
 import type { RustConversion } from '../bindings.js';
 import type { Napi, NapiAffine, NapiPolyComm, NapiPolyComms, NapiSrs } from './napi-wrappers.js';
 import { OrInfinity, OrInfinityJson } from '../bindings/curve.js';
 import { PolyComm } from '../bindings/kimchi-types.js';
 
-export { setSrsCache, srs, unsetSrsCache };
+export { srs };
 
 type SrsStore = Record<number, NapiSrs>;
 
@@ -23,15 +24,6 @@ function empty(): SrsStore {
 const srsStore = { fp: empty(), fq: empty() };
 
 const CacheReadRegister = new Map<string, boolean>();
-
-let cache: Cache | undefined;
-
-function setSrsCache(c: Cache) {
-  cache = c;
-}
-function unsetSrsCache() {
-  cache = undefined;
-}
 
 const srsVersion = 1;
 

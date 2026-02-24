@@ -8,18 +8,22 @@ let wasm;
 try {
   const require_ = createRequire(import.meta.url);
   wasm = require_(slug);
+  wasm.__o1js_backend_preference = 'native';
+  if (typeof globalThis !== 'undefined') {
+    globalThis.__o1js_backend_preference = 'native';
+  }
 } catch (e) {
   throw new Error(
     `Native backend requested but '${slug}' is not installed.\n` +
-      `Install it with: npm install @o1js/native\n` +
-      `Original error: ${e.message}`
+    `Install it with: npm install @o1js/native\n` +
+    `Original error: ${e.message}`
   );
 }
 
 // noop thread pool, napirs uses native os threads
 const withThreadPool = WithThreadPool({
-  initThreadPool: async () => {},
-  exitThreadPool: async () => {},
+  initThreadPool: async () => { },
+  exitThreadPool: async () => { },
 });
 
 export { wasm, withThreadPool };
