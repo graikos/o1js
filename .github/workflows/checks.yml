@@ -434,7 +434,9 @@ jobs:
           TEST_FILES=()
           while IFS= read -r line; do
             [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-            js_path="./dist/node/${line%.ts}.js"
+            # Strip src/ prefix and convert .ts to .js
+            js_path="./dist/node/${line#src/}"
+            js_path="${js_path%.ts}.js"
             if [ -f "$js_path" ]; then
               TEST_FILES+=("$js_path")
             else
