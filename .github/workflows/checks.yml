@@ -416,6 +416,11 @@ jobs:
           proof_systems_commit: ${{ inputs.proof_systems_commit }}
       - name: Install native package
         run: npm install ./native/linux-x64/
+      - name: Ensure test files are built
+        run: |
+          echo "Building test files to ensure they exist in dist/node..."
+          npx tsc -p tsconfig.test.json
+          echo "Test files built successfully"
       - name: Collect backend-dependent tests
         id: collect_tests
         shell: bash
