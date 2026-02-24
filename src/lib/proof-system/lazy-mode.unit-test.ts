@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { wasm } from '../../bindings.js';
+import { initializeBindings, wasm } from '../../bindings.js';
 import { Cache } from '../proof-system/cache.js';
 import { ZkProgram } from '../proof-system/zkprogram.js';
 import { Field } from '../provable/field.js';
@@ -37,6 +37,9 @@ let LazyMode = ZkProgram({
 });
 
 export async function testLazyMode(lazyMode: boolean) {
+  // Initialize bindings before accessing wasm
+  await initializeBindings();
+
   console.log(`(${lazyMode ? 'Lazy' : 'Eager'}) Memory before compilation`, getMemory());
 
   await LazyMode.compile({
