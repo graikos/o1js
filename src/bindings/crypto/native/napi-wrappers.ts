@@ -12,7 +12,6 @@ import type {
   WasmFpProverCommitments as NapiFpProverCommitments,
   WasmFpProverProof as NapiFpProverProof,
   WasmFpRandomOracles as NapiFpRandomOracles,
-  WasmFpRuntimeTable as NapiFpRuntimeTable,
   WasmFpShifts as NapiFpShifts,
   WasmFpSrs as NapiFpSrs,
   WasmFqDomain as NapiFqDomain,
@@ -27,7 +26,6 @@ import type {
   WasmFqProverCommitments as NapiFqProverCommitments,
   WasmFqProverProof as NapiFqProverProof,
   WasmFqRandomOracles as NapiFqRandomOracles,
-  WasmFqRuntimeTable as NapiFqRuntimeTable,
   WasmFqShifts as NapiFqShifts,
   WasmFqSrs as NapiFqSrs,
   LookupInfo as NapiLookupInfo,
@@ -122,6 +120,16 @@ export type NapiProverProof = {
   prev_challenges_comms: ArrayLike<NapiPolyComm>;
 };
 
+export type NapiFpRuntimeTable = {
+  id: number;
+  data: Uint8Array;
+};
+
+export type NapiFqRuntimeTable = {
+  id: number;
+  data: Uint8Array;
+};
+
 export type NapiRuntimeTable = NapiFpRuntimeTable | NapiFqRuntimeTable;
 export type NapiRuntimeTableCfg = NapiPastaFpRuntimeTableCfg | NapiPastaFqRuntimeTableCfg;
 export type NapiLookupTable = NapiPastaFpLookupTable | NapiPastaFqLookupTable;
@@ -210,7 +218,6 @@ export type NapiProofClasses = {
   VecVec: typeof NapiVecVecFp | typeof NapiVecVecFq;
   ProverProof: typeof NapiFpProverProof | typeof NapiFqProverProof;
   LookupCommitments: typeof NapiFpLookupCommitments | typeof NapiFqLookupCommitments;
-  RuntimeTable: typeof NapiFpRuntimeTable | typeof NapiFqRuntimeTable;
   RuntimeTableCfg: typeof NapiPastaFpRuntimeTableCfg | typeof NapiPastaFqRuntimeTableCfg;
   LookupTable: typeof NapiPastaFpLookupTable | typeof NapiPastaFqLookupTable;
 };
