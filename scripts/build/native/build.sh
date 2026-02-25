@@ -17,9 +17,13 @@ BINDINGS_PATH=./native/$TARGET_SLUG/
 
 mkdir -p $BINDINGS_PATH
 
-info "building native Kimchi bindings..."
-
-dune build $KIMCHI_PATH
+if [ -n "${PREBUILT_KIMCHI_NAPI:-}" ]; then
+    info "using prebuilt native Kimchi bindings from $PREBUILT_KIMCHI_NAPI"
+    BUILT_PATH="$PREBUILT_KIMCHI_NAPI"
+else
+    info "building native Kimchi bindings..."
+    dune build $KIMCHI_PATH
+fi
 
 info "creating package for $TARGET_SLUG bindings..."
 

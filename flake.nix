@@ -251,6 +251,42 @@
               ./src/mina/src/lib/crypto/proof-systems/Cargo.lock;
           };
         };
+        kimchi-napi = rust-platform.buildRustPackage {
+          src = pkgs.lib.sourceByRegex ./src/mina/src
+            [
+              "^lib(/crypto(/proof-systems(/.*)?)?)?$"
+            ];
+          sourceRoot = "source/lib/crypto/proof-systems";
+          name = "kimchi_napi";
+          version = "0.1.0";
+          CARGO_TARGET_DIR = "./target";
+          nativeBuildInputs = with pkgs; [ nodejs ];
+          cargoLock = {
+            lockFile = ./src/mina/src/lib/crypto/proof-systems/Cargo.lock;
+            outputHashes = narHashesFromCargoLock
+              ./src/mina/src/lib/crypto/proof-systems/Cargo.lock;
+          };
+          buildPhase = ''
+            runHook preBuild
+            # Make napi CLI available from prefetched npm deps
+            export PATH="${o1js-npm-deps}/lib/node_modules/.bin:$PATH"
+            napi build \
+              --manifest-path ./Cargo.toml \
+              --package kimchi-napi \
+              --output-dir ./napi-output \
+              --release \
+              --esm
+            runHook postBuild
+          '';
+          dontCheck = true;
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out
+            cp ./napi-output/kimchi_napi.node $out/
+            cp ./napi-output/index.d.ts $out/
+            runHook postInstall
+          '';
+        };
         bindings = requireSubmodules (pkgs.stdenv.mkDerivation {
           name = "o1js_bindings";
           src = with pkgs.lib.fileset;
@@ -291,8 +327,8 @@
           PREBUILT_KIMCHI_BINDINGS_JS_NODE_JS =
             "${mina.files.src-lib-crypto-kimchi_bindings-js-node_js}/src/lib/crypto/kimchi_bindings/js/node_js";
           EXPORT_TEST_VECTORS = "${test-vectors}/bin/export_test_vectors";
+          PREBUILT_KIMCHI_NAPI = "${kimchi-napi}";
           SKIP_MINA_COMMIT = true;
-          SKIP_NATIVE_BUILD = true;
           JUST_BINDINGS = true;
           buildInputs = (with pkgs;
             [
