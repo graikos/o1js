@@ -141,6 +141,9 @@
     "stacktrace-js": "^2.0.2",
     "tslib": "^2.3.0"
   },
+  "optionalDependencies": {
+    "@o1js/native-darwin-arm64": "file:./native/darwin-arm64"
+  },
   "o1js-internal": {
     "native-version": "0.0.1-dev.8"
   }
