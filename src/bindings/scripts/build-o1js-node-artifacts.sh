@@ -33,12 +33,7 @@ ok "Mina config files copied"
 
 npm run build:wasm:node
 npm run build:jsoo:node
-
-if [ -z "${SKIP_NATIVE_BUILD:-}" ]; then
-    npm run build:native
-else
-    info "Skipping native build (SKIP_NATIVE_BUILD set)"
-fi
+npm run build:native
 
 info "Building transaction layout TypeScript definitions..."
 run_cmd dune b src/bindings/mina-transaction/gen/v1/js-layout.ts \
