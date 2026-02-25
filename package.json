@@ -133,6 +133,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@o1js/native": "file:./native/meta",
     "blakejs": "1.2.1",
     "cachedir": "^2.4.0",
     "js-sha256": "^0.9.0",
@@ -140,9 +141,6 @@
     "reflect-metadata": "^0.1.13",
     "stacktrace-js": "^2.0.2",
     "tslib": "^2.3.0"
-  },
-  "optionalDependencies": {
-    "@o1js/native-darwin-arm64": "file:./native/darwin-arm64"
   },
   "o1js-internal": {
     "native-version": "0.0.1-dev.8"
