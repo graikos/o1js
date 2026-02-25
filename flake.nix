@@ -270,9 +270,6 @@
             runHook preBuild
             # Make napi CLI available from prefetched npm deps
             export PATH="${o1js-npm-deps}/lib/node_modules/.bin:$PATH"
-            # napi CLI expects a package.json with napi config in the cwd
-            cp ${./src/mina/src/lib/crypto/kimchi_bindings/js/native/package.json} ./package.json
-            cp ${./src/mina/src/lib/crypto/kimchi_bindings/js/native/header-d.ts} ./header-d.ts
             napi build \
               --manifest-path ./Cargo.toml \
               --package kimchi-napi \
