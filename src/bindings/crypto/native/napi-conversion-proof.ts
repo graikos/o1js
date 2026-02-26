@@ -62,7 +62,6 @@ function napiProofConversion(napi: Napi, core: ConversionCores) {
       VecVec: napi.WasmVecVecFp,
       ProverProof: napi.WasmFpProverProof,
       LookupCommitments: napi.WasmFpLookupCommitments,
-      RuntimeTableCfg: napi.WasmPastaFpRuntimeTableCfg,
       LookupTable: napi.WasmPastaFpLookupTable,
     }),
     fq: proofConversionPerField(core.fq, {
@@ -71,7 +70,6 @@ function napiProofConversion(napi: Napi, core: ConversionCores) {
       VecVec: napi.WasmVecVecFq,
       ProverProof: napi.WasmFqProverProof,
       LookupCommitments: napi.WasmFqLookupCommitments,
-      RuntimeTableCfg: napi.WasmPastaFqRuntimeTableCfg,
       LookupTable: napi.WasmPastaFqLookupTable,
     }),
   };
@@ -85,7 +83,6 @@ function proofConversionPerField(
     VecVec,
     ProverProof,
     LookupCommitments,
-    RuntimeTableCfg,
     LookupTable,
   }: NapiProofClasses
 ) {
@@ -190,7 +187,7 @@ function proofConversionPerField(
   }
 
   function runtimeTableCfgToRust([, id, firstColumn]: RuntimeTableCfg): NapiRuntimeTableCfg {
-    return new RuntimeTableCfg(id, core.vectorToRust(firstColumn));
+    return { id, firstColumn: core.vectorToRust(firstColumn) };
   }
 
   function lookupTableToRust([, id, [, ...data]]: LookupTable): NapiLookupTable {

@@ -131,7 +131,7 @@ export type NapiFqRuntimeTable = {
 };
 
 export type NapiRuntimeTable = NapiFpRuntimeTable | NapiFqRuntimeTable;
-export type NapiRuntimeTableCfg = NapiPastaFpRuntimeTableCfg | NapiPastaFqRuntimeTableCfg;
+export type NapiRuntimeTableCfg = { id: number; firstColumn: Uint8Array };
 export type NapiLookupTable = NapiPastaFpLookupTable | NapiPastaFqLookupTable;
 export type NapiVecVec = NapiVecVecFp | NapiVecVecFq;
 
@@ -218,7 +218,6 @@ export type NapiProofClasses = {
   VecVec: typeof NapiVecVecFp | typeof NapiVecVecFq;
   ProverProof: typeof NapiFpProverProof | typeof NapiFqProverProof;
   LookupCommitments: typeof NapiFpLookupCommitments | typeof NapiFqLookupCommitments;
-  RuntimeTableCfg: typeof NapiPastaFpRuntimeTableCfg | typeof NapiPastaFqRuntimeTableCfg;
   LookupTable: typeof NapiPastaFpLookupTable | typeof NapiPastaFqLookupTable;
 };
 
