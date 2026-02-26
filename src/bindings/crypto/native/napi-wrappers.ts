@@ -30,9 +30,7 @@ import type {
   WasmFqSrs as NapiFqSrs,
   LookupInfo as NapiLookupInfo,
   WasmPastaFpLookupTable as NapiPastaFpLookupTable,
-  WasmPastaFpRuntimeTableCfg as NapiPastaFpRuntimeTableCfg,
   WasmPastaFqLookupTable as NapiPastaFqLookupTable,
-  WasmPastaFqRuntimeTableCfg as NapiPastaFqRuntimeTableCfg,
   WasmVecVecFp as NapiVecVecFp,
   WasmVecVecFq as NapiVecVecFq,
 } from '../../compiled/node_bindings/kimchi_wasm.cjs';
