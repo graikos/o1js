@@ -20,6 +20,11 @@ source ./scripts/lib/ux.sh
 
 setup_script "wasm-node-build" "wasm node build"
 
+# Temporary default for local debugging: override only if caller didn't set one.
+NIGHTLY_RUST_VERSION="${NIGHTLY_RUST_VERSION:-nightly-2025-09-05}"
+export NIGHTLY_RUST_VERSION
+info "using proof-systems nightly: ${NIGHTLY_RUST_VERSION}"
+
 MINA_PATH=./src/mina
 KIMCHI_PATH=$MINA_PATH/src/lib/crypto/kimchi_bindings/js/node_js/
 BUILT_PATH=./_build/default/$KIMCHI_PATH
