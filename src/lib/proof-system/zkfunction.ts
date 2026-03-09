@@ -220,8 +220,11 @@ class KimchiProof {
     const bytes = Uint8Array.from(Buffer.from(json.proof, 'base64'));
     const rustProof = wasm.WasmFpProverProof.deserialize(bytes);
     const rustConversion = getRustConversion(wasm);
+    // `getRustConversion()` is backend-dependent and TS sees a union of
+    // conversion signatures; normalize to a callable shape.
+    const proofFromRust = rustConversion.fp.proofFromRust as (proof: unknown) => unknown;
     const proofWithEvalsMl = Snarky.circuit.proofFromBackendProofEvals(
-      rustConversion.fp.proofFromRust(rustProof)
+      proofFromRust(rustProof)
     );
     const publicInputFields = json.publicInputFields.map((s) => Field(s));
     return new KimchiProof(proofWithEvalsMl, publicInputFields);
