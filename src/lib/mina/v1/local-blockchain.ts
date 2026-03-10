@@ -1,42 +1,43 @@
-import { SimpleLedger } from './transaction-logic/ledger.js';
-import { Ml } from '../../ml/conversion.js';
-import { transactionCommitments } from '../../../mina-signer/src/sign-zkapp-command.js';
 import { Ledger, Test, initializeBindings } from '../../../bindings.js';
-import { Field } from '../../provable/wrapped.js';
-import { UInt32, UInt64 } from '../../provable/int.js';
-import { PrivateKey, PublicKey } from '../../provable/crypto/signature.js';
-import { Account } from './account.js';
-import { ZkappCommand, TokenId, Authorization, Actions } from './account-update.js';
-import { NetworkId } from '../../../mina-signer/src/types.js';
-import { TupleN } from '../../util/types.js';
 import { Types, TypesBigint } from '../../../bindings/mina-transaction/v1/types.js';
+import { transactionCommitments } from '../../../mina-signer/src/sign-zkapp-command.js';
+import { NetworkId } from '../../../mina-signer/src/types.js';
+import { Ml } from '../../ml/conversion.js';
+import { PrivateKey, PublicKey } from '../../provable/crypto/signature.js';
+import { UInt32, UInt64 } from '../../provable/int.js';
+import { Field } from '../../provable/wrapped.js';
+import { prettifyStacktrace } from '../../util/errors.js';
+import { TupleN } from '../../util/types.js';
+import { Actions, Authorization, TokenId, ZkappCommand } from './account-update.js';
+import { Account } from './account.js';
 import { invalidTransactionError } from './errors.js';
+import { type DepthOptions, type TransactionDepthInfo } from './graphql.js';
 import {
-  Transaction,
-  PendingTransaction,
-  createTransaction,
-  toTransactionPromise,
-  createIncludedTransaction,
-  createRejectedTransaction,
-  IncludedTransaction,
-  RejectedTransaction,
-  PendingTransactionStatus,
-  PendingTransactionPromise,
-  toPendingTransactionPromise,
-} from './transaction.js';
-import {
-  type FeePayerSpec,
-  type ActionStates,
   Mina,
   defaultNetworkConstants,
+  type ActionStates,
+  type FeePayerSpec,
 } from './mina-instance.js';
+import { SimpleLedger } from './transaction-logic/ledger.js';
 import {
-  reportGetAccountError,
   defaultNetworkState,
-  verifyTransactionLimits,
+  reportGetAccountError,
   verifyAccountUpdate,
+  verifyTransactionLimits,
 } from './transaction-validation.js';
-import { prettifyStacktrace } from '../../util/errors.js';
+import {
+  IncludedTransaction,
+  PendingTransaction,
+  PendingTransactionPromise,
+  PendingTransactionStatus,
+  RejectedTransaction,
+  Transaction,
+  WaitForFinalityOptions,
+  createRejectedTransaction,
+  createTransaction,
+  toPendingTransactionPromise,
+  toTransactionPromise,
+} from './transaction.js';
 
 export { LocalBlockchain, TestPublicKey };
 
@@ -60,6 +61,8 @@ namespace TestPublicKey {
     return TestPublicKey(PrivateKey.fromBase58(base58));
   }
 }
+
+export type LocalBlockchain = Awaited<ReturnType<typeof LocalBlockchain>>;
 
 /**
  * A mock Mina blockchain running locally and useful for testing.
@@ -276,6 +279,9 @@ async function LocalBlockchain({ proofsEnabled = true, enforceTransactionLimits 
           return pendingTransaction;
         };
 
+        // Track the block height at which this transaction was included
+        const inclusionBlockHeight = Number(networkState.blockchainLength.toBigint());
+
         const safeWait = async (_options?: {
           maxAttempts?: number;
           interval?: number;
@@ -283,7 +289,9 @@ async function LocalBlockchain({ proofsEnabled = true, enforceTransactionLimits 
           if (status === 'rejected') {
             return createRejectedTransaction(pendingTransaction, pendingTransaction.errors);
           }
-          return createIncludedTransaction(pendingTransaction);
+          return createLocalIncludedTransaction(pendingTransaction, inclusionBlockHeight, () =>
+            Number(networkState.blockchainLength.toBigint())
+          );
         };
 
         return {
@@ -387,5 +395,82 @@ async function LocalBlockchain({ proofsEnabled = true, enforceTransactionLimits 
     },
   };
 }
+
+/**
+ * Default finality threshold of 15 blocks provides 99.9% confidence.
+ * @see https://docs.minaprotocol.com/mina-protocol/lifecycle-of-a-payment
+ */
+const DEFAULT_FINALITY_THRESHOLD = 15;
+
+/**
+ * Creates an IncludedTransaction with LocalBlockchain-specific depth calculation.
+ * Unlike the network version which fetches from GraphQL, this calculates depth
+ * based on the current local blockchain state.
+ */
+function createLocalIncludedTransaction(
+  pendingTx: Omit<PendingTransaction, 'wait' | 'safeWait'>,
+  inclusionBlockHeight: number,
+  getCurrentBlockHeight: () => number
+): IncludedTransaction {
+  const safeGetDepth = async (options?: DepthOptions): Promise<TransactionDepthInfo | null> => {
+    const finalityThreshold = options?.finalityThreshold ?? DEFAULT_FINALITY_THRESHOLD;
+    const currentBlockHeight = getCurrentBlockHeight();
+    // Depth should never be negative (safeguard against edge cases)
+    const depth = Math.max(0, currentBlockHeight - inclusionBlockHeight);
+
+    return {
+      depth,
+      inclusionBlockHeight,
+      currentBlockHeight,
+      isFinalized: depth >= finalityThreshold,
+      finalityThreshold,
+    };
+  };
+
+  const getDepth = async (options?: DepthOptions): Promise<TransactionDepthInfo> => {
+    const result = await safeGetDepth(options);
+    // For LocalBlockchain, this should never be null
+    return result!;
+  };
+
+  const waitForFinality = async (
+    options?: WaitForFinalityOptions
+  ): Promise<TransactionDepthInfo> => {
+    const finalityThreshold = options?.finalityThreshold ?? DEFAULT_FINALITY_THRESHOLD;
+    const interval = options?.interval ?? 60000;
+    const maxAttempts = options?.maxAttempts ?? 30;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const info = await safeGetDepth({ finalityThreshold });
+      if (info) {
+        options?.onProgress?.(info);
+        if (info.isFinalized) {
+          return info;
+        }
+      }
+      if (attempt < maxAttempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, interval));
+      }
+    }
+
+    throw Error(
+      `Transaction ${pendingTx.hash} did not reach finality after ${maxAttempts} attempts (threshold: ${finalityThreshold} blocks).`
+    );
+  };
+
+  return {
+    status: 'included',
+    transaction: pendingTx.transaction,
+    toJSON: pendingTx.toJSON,
+    toPretty: pendingTx.toPretty,
+    hash: pendingTx.hash,
+    data: pendingTx.data,
+    inclusionBlockHeight,
+    getDepth,
+    safeGetDepth,
+    waitForFinality,
+  };
+}
+
 // assert type compatibility without preventing LocalBlockchain to return additional properties / methods
 LocalBlockchain satisfies (...args: any) => Promise<Mina>;
