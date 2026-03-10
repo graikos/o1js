@@ -49,12 +49,13 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- "$BASELINE_PATH"; then
+          git add "$BASELINE_PATH"
+
+          if git diff --cached --quiet -- "$BASELINE_PATH"; then
             echo "No changes in $BASELINE_PATH; nothing to commit."
             exit 0
           fi
 
-          git add "$BASELINE_PATH"
           git commit -m "ci(perf): update wasm baseline $BASELINE_PATH"
           git push origin HEAD:"$BRANCH_NAME"
           echo "Wasm baseline committed and pushed to branch: $BRANCH_NAME"
@@ -99,12 +100,13 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- "$BASELINE_PATH"; then
+          git add "$BASELINE_PATH"
+
+          if git diff --cached --quiet -- "$BASELINE_PATH"; then
             echo "No changes in $BASELINE_PATH; nothing to commit."
             exit 0
           fi
 
-          git add "$BASELINE_PATH"
           git commit -m "ci(perf): update native baseline $BASELINE_PATH"
           git push origin HEAD:"$BRANCH_NAME"
           echo "Native baseline committed and pushed to branch: $BRANCH_NAME"
