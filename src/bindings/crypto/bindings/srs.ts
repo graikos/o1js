@@ -1,6 +1,7 @@
 import type { Wasm, RustConversion } from '../bindings.js';
 import { type WasmFpSrs, type WasmFqSrs } from '../../compiled/node_bindings/kimchi_wasm.cjs';
 import { PolyComm } from './kimchi-types.js';
+import { srsCache as cache } from '../cache.js';
 import {
   type CacheHeader,
   type Cache,
@@ -12,7 +13,7 @@ import { assert } from '../../../lib/util/errors.js';
 import { MlArray } from '../../../lib/ml/base.js';
 import { OrInfinity, OrInfinityJson } from './curve.js';
 
-export { srs, setSrsCache, unsetSrsCache };
+export { srs };
 
 type WasmSrs = WasmFpSrs | WasmFqSrs;
 
@@ -25,15 +26,6 @@ function empty(): SrsStore {
 const srsStore = { fp: empty(), fq: empty() };
 
 const CacheReadRegister = new Map<string, boolean>();
-
-let cache: Cache | undefined;
-
-function setSrsCache(c: Cache) {
-  cache = c;
-}
-function unsetSrsCache() {
-  cache = undefined;
-}
 
 const srsVersion = 1;
 

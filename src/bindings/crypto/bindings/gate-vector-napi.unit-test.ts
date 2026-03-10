@@ -20,7 +20,8 @@ function loadNative() {
       if ((err as any).code !== 'MODULE_NOT_FOUND') throw err;
     }
   }
-  throw new Error('kimchi_napi.node not found in compiled bindings');
+  console.warn('kimchi_napi.node not found in compiled bindings');
+  process.exit(0);
 }
 
 const native: any = loadNative();

@@ -56,7 +56,9 @@ function parseHeader(
       let methodIndex = header[1][3];
       let methodName = methods[methodIndex].methodName;
       let persistentId = sanitize(`${kind}-${programName}-${methodName}`);
-      let uniqueId = sanitize(`${kind}-${programName}-${methodIndex}-${methodName}-${hash}`);
+      let uniqueId = sanitize(
+        `${kind}-${programName}-${methodIndex}-${methodName}-${hash}`
+      );
       return {
         version: cacheHeaderVersion,
         uniqueId,
@@ -95,10 +97,7 @@ function encodeProverKey(value: SnarkKey): Uint8Array {
   switch (value[0]) {
     case KeyType.StepProvingKey: {
       let index = value[1][1];
-      let encoded = wasm.caml_pasta_fp_plonk_index_encode(
-        (wasm as any).prover_index_fp_deserialize((wasm as any).prover_index_fp_serialize(index))
-      );
-      return encoded;
+      return wasm.caml_pasta_fp_plonk_index_encode(index);
     }
     case KeyType.StepVerificationKey: {
       let vkMl = value[1];
@@ -109,10 +108,7 @@ function encodeProverKey(value: SnarkKey): Uint8Array {
     }
     case KeyType.WrapProvingKey: {
       let index = value[1][1];
-      let encoded = wasm.caml_pasta_fq_plonk_index_encode(
-        (wasm as any).prover_index_fq_deserialize((wasm as any).prover_index_fq_serialize(index))
-      );
-      return encoded;
+      return wasm.caml_pasta_fq_plonk_index_encode(index);
     }
     case KeyType.WrapVerificationKey: {
       let vk = value[1];
@@ -131,8 +127,7 @@ function encodeProverKey(value: SnarkKey): Uint8Array {
 function decodeProverKey(header: SnarkKeyHeader, bytes: Uint8Array): SnarkKey {
   switch (header[0]) {
     case KeyType.StepProvingKey: {
-      let srs = Pickles.loadSrsFp();
-      let index = wasm.caml_pasta_fp_plonk_index_decode(bytes, srs);
+      let index = wasm.caml_pasta_fp_plonk_index_decode(bytes, Pickles.loadSrsFp());
       let cs = header[1][4];
       return [KeyType.StepProvingKey, [0, index, cs]];
     }
@@ -145,8 +140,7 @@ function decodeProverKey(header: SnarkKeyHeader, bytes: Uint8Array): SnarkKey {
       return [KeyType.StepVerificationKey, vkMl];
     }
     case KeyType.WrapProvingKey: {
-      let srs = Pickles.loadSrsFq();
-      let index = wasm.caml_pasta_fq_plonk_index_decode(bytes, srs);
+      let index = wasm.caml_pasta_fq_plonk_index_decode(bytes, Pickles.loadSrsFq());
       let cs = header[1][3];
       return [KeyType.WrapProvingKey, [0, index, cs]];
     }

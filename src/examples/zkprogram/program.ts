@@ -15,12 +15,6 @@ let MyProgram = ZkProgram({
   },
 });
 
-/*
-console.time('compile (with cache)');
-let { verificationKey } = await MyProgram.compile();
-console.timeEnd('compile (with cache)');
-*/
-
 console.time('compile (without cache)');
 let { verificationKey } = await MyProgram.compile({ cache: Cache.None });
 console.timeEnd('compile (without cache)');

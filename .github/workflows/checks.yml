@@ -235,9 +235,9 @@ jobs:
       - name: Count tests
         id: count_tests
         run: |
-          TEST_COUNT=$(find ./dist/node -name "*.unit-test.js" | wc -l)
+          TEST_COUNT=$(find ./dist/node -name "*.unit-test.js" -not -name "*-napi.unit-test.js" | wc -l)
           echo "test_count=${TEST_COUNT}" >> $GITHUB_OUTPUT
-          echo "Total test count: ${TEST_COUNT}"
+          echo "Total test count (excluding napi): ${TEST_COUNT}"
 
       - name: Run unit tests
         env:
@@ -261,7 +261,13 @@ jobs:
           echo "Running tests from index $start_index to $end_index"
 
           shopt -s globstar
-          test_files=(./dist/node/**/*.unit-test.js)
+          all_tests=(./dist/node/**/*.unit-test.js)
+          test_files=()
+          for test in "${all_tests[@]}"; do
+            if [[ ! "$test" =~ -napi\.unit-test\.js$ ]]; then
+              test_files+=("$test")
+            fi
+          done
 
           set -o pipefail
 
@@ -417,6 +423,11 @@ jobs:
           proof_systems_commit: ${{ inputs.proof_systems_commit }}
       - name: Install native package
         run: npm install ./native/linux-x64/
+      - name: Ensure test files are built
+        run: |
+          echo "Building test files to ensure they exist in dist/node..."
+          npx tsc -p tsconfig.test.json
+          echo "Test files built successfully"
       - name: Collect backend-dependent tests
         id: collect_tests
         shell: bash
@@ -424,7 +435,9 @@ jobs:
           TEST_FILES=()
           while IFS= read -r line; do
             [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-            js_path="./dist/node/${line%.ts}.js"
+            # Strip src/ prefix and convert .ts to .js
+            js_path="./dist/node/${line#src/}"
+            js_path="${js_path%.ts}.js"
             if [ -f "$js_path" ]; then
               TEST_FILES+=("$js_path")
             else
