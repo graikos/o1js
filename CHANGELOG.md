@@ -18,6 +18,12 @@ This project adheres to
 
 ## [Unreleased](https://github.com/o1-labs/o1js/compare/c81f31ad0...HEAD)
 
+### Added
+
+- Collision-resistant version of Poseidon gadget for variable length inputs
+  `Poseidon.hashAnyLength()` (backwards incompatible with `Poseidon.hash()`) and
+  improved documentation with tests. https://github.com/o1-labs/o1js/pull/2753
+
 ### Changed
 
 - Replace js-sha256 with @noble/hashes https://github.com/o1-labs/o1js/pull/2539
