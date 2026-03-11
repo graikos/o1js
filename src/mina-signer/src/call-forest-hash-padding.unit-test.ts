@@ -9,7 +9,6 @@ type Leaf = bigint;
 async function testCallForestPaddingCollision() {
   const net: NetworkId = 'testnet';
   const hashLeaf = (leaf: Leaf) => Poseidon.hash([leaf]);
-  const hash = (leaf: Leaf, _networkId: NetworkId) => hashLeaf(leaf);
 
   const forestBase: CallForest<Leaf> = [{ accountUpdate: 1n, children: [] }];
   const forestPadded: CallForest<Leaf> = [
@@ -19,14 +18,14 @@ async function testCallForestPaddingCollision() {
 
   const baseDigest = callForestHashGeneric(
     forestBase,
-    hash,
+    hashLeaf,
     hashWithPrefix,
     0n,
     net
   );
   const paddedDigest = callForestHashGeneric(
     forestPadded,
-    hash,
+    hashLeaf,
     hashWithPrefix,
     0n,
     net

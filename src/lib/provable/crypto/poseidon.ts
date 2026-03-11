@@ -71,8 +71,8 @@ class Sponge {
  *
  * @example
  * ```ts
- * const state = [Field.one()];
- * const padded = [...state, Field.zero()];
+ * const state = [Field.from(1n)];
+ * const padded = [...state, Field.from(0n)];
  *
  * poseidonBlockCipher(params, state);
  * poseidonBlockCipher(params, padded);
@@ -101,7 +101,7 @@ const Poseidon = {
     let init = Poseidon.update(Poseidon.initialState(), [prefixToField(prefix)]);
     return Poseidon.update(init, input)[0];
   },
-  
+
   hashAnyLength(input: Field[]) {
     let len = Field(input.length);
     return Poseidon.hash([...input, len]);
