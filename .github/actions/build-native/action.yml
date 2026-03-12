@@ -67,7 +67,6 @@ runs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: nightly-2024-06-13
-        targets: wasm32-unknown-unknown
         components: rust-src
 
     - name: Cache Cargo build
@@ -77,6 +76,7 @@ runs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
+          src/mina/src/lib/crypto/proof-systems/target
         key: ${{ runner.OS }}-${{ runner.arch }}-cargo-native-${{ hashFiles('src/mina/src/lib/crypto/proof-systems/Cargo.lock') }}
 
     - name: Build native package
