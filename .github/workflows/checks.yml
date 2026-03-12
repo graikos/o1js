@@ -422,37 +422,17 @@ jobs:
           proof_systems_commit: ${{ inputs.proof_systems_commit }}
       - name: Install native package
         run: npm install ./native/linux-x64/
-      - name: Ensure test files are built
+      - name: Count tests
+        id: count_tests
         run: |
-          echo "Building test files to ensure they exist in dist/node..."
-          npx tsc -p tsconfig.test.json
-          echo "Test files built successfully"
-      - name: Collect backend-dependent tests
-        id: collect_tests
-        shell: bash
-        run: |
-          TEST_FILES=()
-          while IFS= read -r line; do
-            [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-            # Strip src/ prefix and convert .ts to .js
-            js_path="./dist/node/${line#src/}"
-            js_path="${js_path%.ts}.js"
-            if [ -f "$js_path" ]; then
-              TEST_FILES+=("$js_path")
-            else
-              echo "ERROR: Test file not found: $js_path (from: $line)"
-              exit 1
-            fi
-          done < scripts/ci/native-backend-tests.txt
-
-          echo "test_count=${#TEST_FILES[@]}" >> $GITHUB_OUTPUT
-          echo "Total native unit tests: ${#TEST_FILES[@]}"
-          printf '%s\n' "${TEST_FILES[@]}" > /tmp/native-test-files.txt
+          TEST_COUNT=$(find ./dist/node -name "*.unit-test.js" | wc -l)
+          echo "test_count=${TEST_COUNT}" >> $GITHUB_OUTPUT
+          echo "Total test count: ${TEST_COUNT}"
       - name: Prepare for tests
         run: touch profiling.md
       - name: Run native unit tests
         env:
-          TOTAL_TESTS: ${{ steps.collect_tests.outputs.test_count }}
+          TOTAL_TESTS: ${{ steps.count_tests.outputs.test_count }}
           CHUNK: ${{ matrix.chunk }}
           CHUNKS: 4
           O1JS_BACKEND: native
@@ -467,7 +447,8 @@ jobs:
             exit 1
           fi
 
-          mapfile -t test_files < /tmp/native-test-files.txt
+          shopt -s globstar
+          test_files=(./dist/node/**/*.unit-test.js)
 
           start_index=$(( (TOTAL_TESTS * (CHUNK - 1) / CHUNKS) ))
           end_index=$(( (TOTAL_TESTS * CHUNK / CHUNKS) ))
