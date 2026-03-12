@@ -77,6 +77,14 @@ function signZkappCommand(
   return ZkappCommand.toJSON(zkappCommand);
 }
 
+function getZkappCommandCommitments(
+  zkappCommand_: Json.ZkappCommand,
+  networkId: NetworkId
+): {commitment: bigint, fullCommitment: bigint} {
+  let zkappCommand = ZkappCommand.fromJSON(zkappCommand_);
+
+  return transactionCommitments(zkappCommand, networkId);
+}
 /**
  * Verifies the signature of a zkApp command JSON object.
  * 
