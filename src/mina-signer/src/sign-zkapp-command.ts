@@ -12,7 +12,7 @@ import { mocks } from '../../bindings/crypto/constants.js';
 import { NetworkId } from './types.js';
 
 // external API
-export { signZkappCommand, verifyZkappCommandSignature };
+export { signZkappCommand, verifyZkappCommandSignature, getZkappCommandCommitments };
 
 // internal API
 export {
@@ -80,7 +80,7 @@ function signZkappCommand(
 function getZkappCommandCommitments(
   zkappCommand_: Json.ZkappCommand,
   networkId: NetworkId
-): {commitment: bigint, fullCommitment: bigint} {
+): { commitment: bigint, fullCommitment: bigint } {
   let zkappCommand = ZkappCommand.fromJSON(zkappCommand_);
 
   return transactionCommitments(zkappCommand, networkId);
