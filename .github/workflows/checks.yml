@@ -440,13 +440,16 @@ jobs:
             if [ -f "$js_path" ]; then
               TEST_FILES+=("$js_path")
             else
-              echo "WARNING: Test file not found: $js_path (from: $line)"
+              echo "ERROR: Test file not found: $js_path (from: $line)"
+              exit 1
             fi
           done < scripts/ci/native-backend-tests.txt
 
           echo "test_count=${#TEST_FILES[@]}" >> $GITHUB_OUTPUT
           echo "Total native unit tests: ${#TEST_FILES[@]}"
           printf '%s\n' "${TEST_FILES[@]}" > /tmp/native-test-files.txt
+      - name: Prepare for tests
+        run: touch profiling.md
       - name: Run native unit tests
         env:
           TOTAL_TESTS: ${{ steps.collect_tests.outputs.test_count }}
@@ -490,6 +493,13 @@ jobs:
         run: |
           echo "### Test Results for Native Unit Tests Chunk ${{ matrix.chunk }}" >> $GITHUB_STEP_SUMMARY
           cat profiling.md >> $GITHUB_STEP_SUMMARY
+
+  Build-And-Test-Server-Native-Unit-Tests:
+    name: Build-And-Test-Server (Native unit tests)
+    needs: [Run-Native-Unit-Tests]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All native unit tests completed successfully"
 
   master:
     needs: [Prepare-Wasm]
