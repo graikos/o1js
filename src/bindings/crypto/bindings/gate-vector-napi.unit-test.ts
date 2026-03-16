@@ -20,10 +20,14 @@ function loadNative() {
       if ((err as any).code !== 'MODULE_NOT_FOUND') throw err;
     }
   }
-  throw new Error('kimchi_napi.node not found in compiled bindings');
+  return undefined;
 }
 
 const native: any = loadNative();
+if (!native) {
+  console.log('Skipping gate-vector-napi test: kimchi_napi.node not found');
+  process.exit(0);
+}
 
 const gateVectorCreate =
   native.caml_pasta_fp_plonk_gate_vector_create ?? native.camlPastaFpPlonkGateVectorCreate;

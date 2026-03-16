@@ -72,14 +72,13 @@ async function startWorkers(src, memory, builder) {
       let worker = new Worker(src, {
         workerData: { memory, receiver: builder.receiver() },
       });
-      // Do not keep the process alive solely because pool workers exist.
-      worker.unref();
       wasmWorkers.push(worker);
       return new Promise((resolve, reject) => {
         let timer = setTimeout(() => {
           cleanup();
           reject(new Error('Timed out waiting for wasm worker startup'));
         }, startupTimeoutMs);
+        let ready = false;
 
         function cleanup() {
           clearTimeout(timer);
@@ -90,7 +89,10 @@ async function startWorkers(src, memory, builder) {
 
         function onReady(data) {
           if (data == null || data.type !== 'wasm_bindgen_worker_ready') return;
+          ready = true;
           cleanup();
+          // Do not keep the process alive solely because pool workers exist.
+          worker.unref();
           resolve(worker);
         }
 
@@ -101,6 +103,12 @@ async function startWorkers(src, memory, builder) {
 
         function onExit(code) {
           cleanup();
+          if (ready || code === 0) {
+            // Some wasm-bindgen/node combinations exit worker threads as soon as
+            // startup work is done. Treat a clean exit as successful startup.
+            resolve(worker);
+            return;
+          }
           reject(new Error(`WASM worker exited before ready (code ${code})`));
         }
 
