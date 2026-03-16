@@ -422,6 +422,11 @@ class Client {
     return getCommitments(command, this.network);
   }
 
+  getZkappCommandCommitmentsNoCheck({ feePayer: feePayer_, zkappCommand }: Json.ZkappCommand) {
+
+    return getCommitments(zkappCommand, this.network);
+  }
+
   /**
    * Verifies a signed zkApp transaction.
    *
