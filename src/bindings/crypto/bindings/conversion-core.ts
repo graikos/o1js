@@ -138,9 +138,9 @@ function conversionCorePerField(
 // generic rust helpers
 
 type Freeable = { free(): void };
-type Constructor<T> = new (...args: any[]) => T;
+type PrototypeClass<T extends object> = { prototype: T };
 
-function wrap<T>(ptr: number, Class: Constructor<T>): T {
+function wrap<T extends object>(ptr: number, Class: PrototypeClass<T>): T {
   const obj = Object.create(Class.prototype);
   obj.__wbg_ptr = ptr;
   return obj;
