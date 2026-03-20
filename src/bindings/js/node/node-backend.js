@@ -60,13 +60,20 @@ async function exitThreadPool() {
  */
 let wasmWorkers = [];
 
+function getWorkerMemory() {
+  // Use the canonical memory object from the loaded JS module instead of the
+  // callback argument coming through wasm-bindgen externref glue.
+  return typeof wasm.get_memory === 'function' ? wasm.get_memory() : wasm.__wasm.memory;
+}
+
 async function startWorkers(src, memory, builder) {
   wasmWorkers = [];
   const startupTimeoutMs = 30_000;
+  let workerMemory = getWorkerMemory();
   await Promise.all(
     Array.from({ length: builder.numThreads() }, () => {
       let worker = new Worker(src, {
-        workerData: { memory, receiver: builder.receiver() },
+        workerData: { memory: workerMemory, receiver: builder.receiver() },
       });
       wasmWorkers.push(worker);
       return new Promise((resolve, reject) => {
