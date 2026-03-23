@@ -43,8 +43,8 @@ type InferMainType<Config extends ZkFunctionConfig> = MainType<
 
 type ProveMethodType<Config extends ZkFunctionConfig> =
   Get<Config, 'publicInputType'> extends undefined
-    ? (...args: PrivateInputs<Config>) => Promise<KimchiProof>
-    : (publicInput: PublicInput<Config>, ...args: PrivateInputs<Config>) => Promise<KimchiProof>;
+  ? (...args: PrivateInputs<Config>) => Promise<KimchiProof>
+  : (publicInput: PublicInput<Config>, ...args: PrivateInputs<Config>) => Promise<KimchiProof>;
 
 function ZkFunction<Config extends ZkFunctionConfig>(
   config: Config & {
@@ -214,7 +214,7 @@ class KimchiProof {
       proof: rustProof.serialize(),
       publicInputFields: this.publicInputFields.map((f) => f.toString()),
     };
-  } 
+  }
 
   static fromJSON(json: KimchiJsonProof): KimchiProof {
     const bytes = Uint8Array.from(Buffer.from(json.proof, 'base64'));
@@ -228,8 +228,8 @@ class KimchiProof {
     );
     const publicInputFields = json.publicInputFields.map((s) => Field(s));
     return new KimchiProof(proofWithEvalsMl, publicInputFields);
-  } 
- 
+  }
+
   /**
    * Verifies this proof using the provided verification key.
    * @param verificationKey The key to verify against.
@@ -258,7 +258,7 @@ class KimchiVerificationKey {
   constructor(value: Snarky.VerificationKey) {
     this.value = value;
   }
- 
+
   toString(): string {
     const rustConversion = getRustConversion(wasm);
     const rustVerifierIndex = rustConversion.fp.verifierIndexToRust(this.value as any);
@@ -276,7 +276,7 @@ class KimchiVerificationKey {
     const rustConversion = getRustConversion(wasm);
     const verifierIndexMl: unknown = rustConversion.fp.verifierIndexFromRust(rustVerifierIndex);
     return new KimchiVerificationKey(verifierIndexMl);
-  } 
+  }
 }
 
 function mainFromCircuitData<Config extends ZkFunctionConfig>(

@@ -194,6 +194,12 @@ WASM bindings for Node and Web using `npm run build:wasm:node` and
 running the standard build commands automatically generates these bindings as
 part of the overall build process.
 
+Similarly, for internal development and debugging, you can manually build the
+WASM bindings for Node and Web using `npm run build:wasm:node` and
+`npm run build:wasm:web`, respectively. For typical local development, however,
+running the standard build commands automatically generates these bindings as
+part of the overall build process.
+
 ### Generated Constant Types
 
 In addition to building the OCaml and Rust code, the build script also generates

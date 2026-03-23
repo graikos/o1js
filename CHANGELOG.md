@@ -16,11 +16,19 @@ This project adheres to
     _Security_ in case of vulnerabilities.
  -->
 
-## [Unreleased](https://github.com/o1-labs/o1js/compare/c81f31ad0...HEAD)
+## [Unreleased](https://github.com/o1-labs/o1js/compare/ff6c201b...HEAD)
 
 ### Removed
 
 - Removed unused `Cairo*` gates. https://github.com/o1-labs/o1js/pull/2752
+
+## [2.14.0](https://github.com/o1-labs/o1js/compare/c81f31ad0...ff6c201b) - 2026-03-16
+
+### Added
+
+- Collision-resistant version of Poseidon gadget for variable length inputs
+  `Poseidon.hashAnyLength()` (backwards incompatible with `Poseidon.hash()`) and
+  improved documentation with tests. https://github.com/o1-labs/o1js/pull/2753
 
 ### Changed
 
