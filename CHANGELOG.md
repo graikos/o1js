@@ -22,6 +22,11 @@ This project adheres to
 
 - Removed unused Cairo gates. https://github.com/o1-labs/o1js/pull/2813
 
+### Fixed
+
+- Fixed an issue where `TokenContract` permissions were accidentally
+  overwritten. https://github.com/o1-labs/o1js/pull/2817
+
 ## [2.12.0](https://github.com/o1-labs/o1js/compare/c2e51a84...34caaedc9) - 2025-12-03
 
 ### Changed
