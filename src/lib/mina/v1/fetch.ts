@@ -1110,8 +1110,11 @@ async function checkResponseStatus<TDataResponse>(
 }
 
 function inferError(error: unknown): FetchError {
-  let errorMessage = JSON.stringify(error);
-  if (error instanceof AbortSignal) {
+  let errorMessage =
+    error instanceof Error
+      ? `${error.name}: ${error.message}`
+      : JSON.stringify(error);
+  if (error instanceof Error && error.name === 'AbortError') {
     return { statusCode: 408, statusText: `Request Timeout: ${errorMessage}` };
   } else {
     return {
