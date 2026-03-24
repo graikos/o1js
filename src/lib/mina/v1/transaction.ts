@@ -1,3 +1,4 @@
+import { Test } from '../../../bindings.js';
 import { Types } from '../../../bindings/mina-transaction/v1/types.js';
 import { Proof } from '../../proof-system/proof.js';
 import { Empty } from '../../proof-system/zkprogram.js';
@@ -18,7 +19,12 @@ import {
 } from './account-update.js';
 import { Account } from './account.js';
 import * as Fetch from './fetch.js';
-import { sendZkappQuery, type SendZkAppResponse } from './graphql.js';
+import {
+  sendZkappQuery,
+  type DepthOptions,
+  type SendZkAppResponse,
+  type TransactionDepthInfo,
+} from './graphql.js';
 import { activeInstance, type FeePayerSpec } from './mina-instance.js';
 import { assertPreconditionInvariants } from './precondition.js';
 import { currentTransaction, type FetchMode } from './transaction-context.js';
@@ -41,6 +47,7 @@ export {
   type PendingTransactionStatus,
   type RejectedTransaction,
   type TransactionPromise,
+  type WaitForFinalityOptions,
 };
 
 type TransactionCommon = {

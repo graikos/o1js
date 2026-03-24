@@ -2,7 +2,7 @@ import { Test } from '../../../bindings.js';
 import { Types } from '../../../bindings/mina-transaction/v1/types.js';
 import { NetworkId } from '../../../mina-signer/src/types.js';
 import { PublicKey } from '../../provable/crypto/signature.js';
-import { UInt64 } from '../../provable/int.js';
+import { UInt32, UInt64 } from '../../provable/int.js';
 import { Field } from '../../provable/wrapped.js';
 import { Authorization, TokenId } from './account-update.js';
 import { Account } from './account.js';
