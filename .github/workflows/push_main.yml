@@ -6,9 +6,8 @@ on:
       - completed
     branches:
       - main
-      - v1
-      - v2
-      - v3
+      - develop
+      - develop-3.0
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,7 +17,7 @@ jobs:
   Build-Doc:
     strategy:
       matrix:
-        node: [20]
+        node: [22]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -96,8 +95,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Node 24 includes npm 11.5+ required for OIDC
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '22'
 
       - name: Build o1js
         run: |

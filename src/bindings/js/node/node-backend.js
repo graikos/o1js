@@ -64,14 +64,60 @@ async function exitThreadPool() {
  */
 let wasmWorkers = [];
 
+function getWorkerMemory() {
+  // Use the canonical memory object from the loaded JS module instead of the
+  // callback argument coming through wasm-bindgen externref glue.
+  return typeof wasm.get_memory === 'function' ? wasm.get_memory() : wasm.__wasm.memory;
+}
+
+function isCloneError(error) {
+  return error?.name === 'DataCloneError' || String(error?.message ?? error).includes('could not be cloned');
+}
+
+function describeMemory(value) {
+  return {
+    type: value?.constructor?.name,
+    hasBuffer: !!value?.buffer,
+    sharedBuffer: value?.buffer instanceof SharedArrayBuffer,
+    byteLength: value?.buffer?.byteLength,
+  };
+}
+
+function cloneCheck(value) {
+  try {
+    structuredClone(value);
+    return 'ok';
+  } catch (error) {
+    return `${error?.name ?? 'Error'}: ${error?.message ?? String(error)}`;
+  }
+}
+
 async function startWorkers(src, memory, builder) {
   wasmWorkers = [];
   const startupTimeoutMs = 30_000;
+  let workerMemory = getWorkerMemory();
   await Promise.all(
     Array.from({ length: builder.numThreads() }, () => {
-      let worker = new Worker(src, {
-        workerData: { memory, receiver: builder.receiver() },
-      });
+      let worker;
+      try {
+        worker = new Worker(src, {
+          workerData: { memory: workerMemory, receiver: builder.receiver() },
+        });
+      } catch (error) {
+        if (isCloneError(error)) {
+          console.error('[o1js wasm worker debug]', {
+            node: process.version,
+            platform: process.platform,
+            arch: process.arch,
+            sameMemoryObject: memory === workerMemory,
+            callbackMemory: describeMemory(memory),
+            workerMemory: describeMemory(workerMemory),
+            callbackMemoryClone: cloneCheck(memory),
+            workerMemoryClone: cloneCheck(workerMemory),
+          });
+        }
+        throw error;
+      }
       wasmWorkers.push(worker);
       return new Promise((resolve, reject) => {
         let timer = setTimeout(() => {
@@ -130,7 +176,7 @@ function terminateWorkers() {
     try {
       let terminated = worker.terminate();
       if (terminated && typeof terminated.catch === 'function') {
-        terminated.catch(() => {});
+        terminated.catch(() => { });
       }
     } catch {
       // Ignore shutdown races.

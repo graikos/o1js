@@ -2,7 +2,7 @@ import { Test } from '../../../bindings.js';
 import { Types } from '../../../bindings/mina-transaction/v1/types.js';
 import { NetworkId } from '../../../mina-signer/src/types.js';
 import { PublicKey } from '../../provable/crypto/signature.js';
-import { UInt32, UInt64 } from '../../provable/int.js';
+import { UInt64 } from '../../provable/int.js';
 import { Field } from '../../provable/wrapped.js';
 import { Authorization, TokenId } from './account-update.js';
 import { Account } from './account.js';
@@ -111,14 +111,14 @@ function Network(options: {
 function Network(
   options:
     | {
-        networkId?: NetworkId;
-        mina: string | string[];
-        archive?: string | string[];
-        lightnetAccountManager?: string;
-        bypassTransactionLimits?: boolean;
-        minaDefaultHeaders?: HeadersInit;
-        archiveDefaultHeaders?: HeadersInit;
-      }
+      networkId?: NetworkId;
+      mina: string | string[];
+      archive?: string | string[];
+      lightnetAccountManager?: string;
+      bypassTransactionLimits?: boolean;
+      minaDefaultHeaders?: HeadersInit;
+      archiveDefaultHeaders?: HeadersInit;
+    }
     | string
 ): Mina {
   let minaNetworkId: NetworkId = 'devnet';
@@ -214,8 +214,8 @@ function Network(
       }
       throw Error(
         `currentSlot: Could not fetch current slot from graphql endpoint ${minaGraphqlEndpoint} outside of a transaction.\n` +
-          'To query the current slot outside of a transaction, import `fetchCurrentSlot` from o1js and call it with your GraphQL endpoint.\n' +
-          "You can fetch the global slot since genesis (default) or the epoch-relative slot by passing 'epoch' as the second parameter."
+        'To query the current slot outside of a transaction, import `fetchCurrentSlot` from o1js and call it with your GraphQL endpoint.\n' +
+        "You can fetch the global slot since genesis (default) or the epoch-relative slot by passing 'epoch' as the second parameter."
       );
     },
     hasAccount(publicKey: PublicKey, tokenId: Field = TokenId.default) {
@@ -287,7 +287,7 @@ function Network(
           errors: updatedErrors,
           transaction: txn.transaction,
           setFee: txn.setFee,
-          setFeePerSnarkCost: txn.setFeePerSnarkCost,
+          setFeePerAccountUpdate: txn.setFeePerAccountUpdate,
           hash,
           toJSON: txn.toJSON,
           toPretty: txn.toPretty,
@@ -502,7 +502,7 @@ async function waitForFunding(
       return reject(
         new Error(
           `${tag} Timed out after ${maxWaitMin} min waiting for account ${address} to be funded. ` +
-            `The transaction may still be pending — the network might be slow or unstable.`
+          `The transaction may still be pending — the network might be slow or unstable.`
         )
       );
     } else {
