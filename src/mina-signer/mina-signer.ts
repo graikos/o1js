@@ -13,7 +13,7 @@ import {
 } from './src/utils.js';
 import * as TransactionJson from '../bindings/mina-transaction/gen/v1/transaction-json.js';
 import { ZkappCommand } from '../bindings/mina-transaction/gen/v1/transaction-bigint.js';
-import { signZkappCommand, verifyZkappCommandSignature } from './src/sign-zkapp-command.js';
+import { signZkappCommand, verifyZkappCommandSignature, getZkappCommandCommitments as getCommitments } from './src/sign-zkapp-command.js';
 import {
   signPayment,
   signStakeDelegation,
@@ -404,6 +404,27 @@ class Client {
     let signed = signZkappCommand(command, privateKey, this.network);
     let signature = signed.feePayer.authorization;
     return { signature, publicKey, data: { zkappCommand: signed, feePayer } };
+  }
+
+  getZkappCommandCommitments({ feePayer: feePayer_, zkappCommand }: Json.ZkappCommand) {
+    let accountUpdates = zkappCommand.accountUpdates;
+    let minimumFee = this.getAccountUpdateMinimumFee(accountUpdates);
+    let feePayer = validFeePayer(feePayer_, minimumFee);
+    let { fee, nonce, validUntil, feePayer: publicKey, memo } = feePayer;
+    let command: TransactionJson.ZkappCommand = {
+      feePayer: {
+        body: { publicKey, fee, nonce, validUntil },
+        authorization: '',
+      },
+      accountUpdates,
+      memo: Memo.toBase58(Memo.fromString(memo)),
+    };
+    return getCommitments(command, this.network);
+  }
+
+  getZkappCommandCommitmentsNoCheck({ feePayer: feePayer_, zkappCommand }: Json.ZkappCommand) {
+
+    return getCommitments(zkappCommand, this.network);
   }
 
   /**
