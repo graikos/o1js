@@ -16,7 +16,57 @@ This project adheres to
     _Security_ in case of vulnerabilities.
  -->
 
-## [Unreleased](https://github.com/o1-labs/o1js/compare/34caaedc9...HEAD)
+## [Unreleased](https://github.com/o1-labs/o1js/compare/ff6c201b...HEAD)
+
+## [2.14.0](https://github.com/o1-labs/o1js/compare/c81f31ad0...ff6c201b) - 2026-03-16
+
+### Added
+
+- Collision-resistant version of Poseidon gadget for variable length inputs
+  `Poseidon.hashAnyLength()` (backwards incompatible with `Poseidon.hash()`) and
+  improved documentation with tests. https://github.com/o1-labs/o1js/pull/2753
+
+### Changed
+
+- Replace js-sha256 with @noble/hashes https://github.com/o1-labs/o1js/pull/2539
+
+## [2.13.1](https://github.com/o1-labs/o1js/compare/08d8194c5...c81f31ad0) - 2026-02-27
+
+### Fixed
+
+- Fix `Mina.faucet()` API by adding a WAF bypass rule to the faucet and solving
+  the ZK captcha challenge. https://github.com/o1-labs/o1js/pull/2769
+
+## [2.13.0](https://github.com/o1-labs/o1js/compare/34caaedc9...08d8194c5) - 2026-02-04
+
+### Changed
+
+- `Mina.currentSlot()` now works for remote blockchains using cached network
+  state, instead of throwing an error about missing implementation.
+  https://github.com/o1-labs/o1js/pull/2736
+
+### Added
+
+- Added transaction depth and finality API to determine canonical finality of
+  included L1 transactions. `IncludedTransaction` now exposes `getDepth()`,
+  `safeGetDepth()`, and `waitForFinality()` methods. A standalone
+  `fetchTransactionDepth()` function is also available for querying by
+  transaction hash. https://github.com/o1-labs/o1js/pull/2749
+- Export `fetchCurrentSlot` publicly as the supported way to query the current
+  slot from a remote blockchain. The function now returns the global slot since
+  genesis by default and can optionally return the epoch slot (previously the
+  default). https://github.com/o1-labs/o1js/pull/2736
+- Added `fetchTimedAccountInfo()` to retrieve detailed balance information for
+  time-locked accounts, including liquid and locked balances based on the
+  vesting schedule. https://github.com/o1-labs/o1js/pull/2742
+- Added a function `Mina.Transaction.hash(json)` to generate the hash of a JSON
+  Transaction. https://github.com/o1-labs/o1js/pull/2704
+- Added support for `Field` type for the index in runtime table lookups.
+  https://github.com/o1-labs/o1js/pull/2706
+
+### Removed
+
+- Removed unused Cairo gates. https://github.com/o1-labs/o1js/pull/2813
 
 ### Fixed
 
