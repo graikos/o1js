@@ -1,7 +1,7 @@
 {
   "name": "o1js",
   "description": "TypeScript framework for zk-SNARKs and zkApps",
-  "version": "2.14.0",
+  "version": "3.0.0-mesa.0",
   "license": "Apache-2.0",
   "homepage": "https://github.com/o1-labs/o1js/",
   "repository": {
@@ -74,8 +74,8 @@
     "regression:check-perf": "./tests/perf-regression/perf-regression.sh --check",
     "format": "prettier --write --ignore-unknown --no-error-on-unmatched-pattern",
     "format:check": "prettier --check --ignore-unknown --no-error-on-unmatched-pattern",
-    "format:md": "prettier --config .prettierrc.md.cjs --write '**/*.md'",
-    "format:md:check": "prettier --config .prettierrc.md.cjs --check '**/*.md'",
+    "format:md": "prettier --config .prettierrc.md.cjs --write AGENT_LOG.md && prettier --config .prettierrc.md.cjs --write '**/*.md'",
+    "format:md:check": "prettier --config .prettierrc.md.cjs --check AGENT_LOG.md && prettier --config .prettierrc.md.cjs --check '**/*.md'",
     "clean": "./scripts/clean/clean.sh",
     "clean:artifacts": "./scripts/clean/clean-artifacts.sh",
     "clean:all": "./scripts/clean/clean-all.sh",

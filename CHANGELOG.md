@@ -16,7 +16,55 @@ This project adheres to
     _Security_ in case of vulnerabilities.
  -->
 
-## [Unreleased](https://github.com/o1-labs/o1js/compare/ff6c201b...HEAD)
+## [Unreleased](https://github.com/o1-labs/o1js/compare/v3.0.0-mesa.0...HEAD)
+
+## [3.0.0-mesa.0](https://github.com/o1-labs/o1js/compare/ff6c201b...v3.0.0-mesa.0) - 2026-03-26
+
+This is the first prerelease of o1js targeting the **Mesa** hard fork of the
+Mina protocol.
+
+### Breaking changes
+
+- Upgraded the Mina protocol dependency from Berkeley/Devnet to **Mesa**. All
+  verification keys will change and caches must be regenerated.
+- `Transaction.setFeePerSnarkCost()` has been removed. Use
+  `Transaction.setFeePerAccountUpdate()` instead, since "snark cost" has been
+  replaced with `MAX_ZKAPP_SEGMENT_PER_TRANSACTION` in the Mesa protocol.
+- Transaction cost model replaced: the floating-point
+  `TransactionCost.PROOF_COST` / `SIGNED_PAIR_COST` / `SIGNED_SINGLE_COST` /
+  `COST_LIMIT` constants are removed. Transactions are now limited by a segment
+  count (`TransactionLimits.MAX_ZKAPP_SEGMENT_PER_TRANSACTION = 16`).
+- `VerificationKey.toJSON()` now returns `{ data, hash }` instead of just the
+  `data` string.
+- `ZkappConstants.MAX_ZKAPP_STATE_FIELDS` increased from **8** to **32**. Smart
+  contracts can now use up to 32 on-chain state field elements.
+- `TransactionLimits.MAX_ACTION_ELEMENTS` and `MAX_EVENT_ELEMENTS` increased
+  from 100 to **1024**.
+- Removed unused Cairo gate types (`CairoClaim`, `CairoInstruction`,
+  `CairoFlags`, `CairoTransition`).
+
+### Added
+
+- Example zkapp with 32 state fields (`src/examples/zkapps/big-state-zkapp.ts`).
+- Comprehensive unit tests for account update limits, actions/events limits, and
+  state field limits.
+- GraphQL request retries (up to 3 attempts with backoff) for transient network
+  errors.
+- Mesa lightnet support for local testing.
+
+### Changed
+
+- `TokenContract.deploy()` no longer overwrites all permissions with defaults.
+  It now only upgrades the `access` permission to `proofOrSignature()` if it is
+  still at the default (`none()`), preserving any custom permissions set in
+  `init()`.
+- Hardened WASM thread pool lifecycle: added startup guards, proper error
+  handling, and re-entrancy protection for `initThreadPool` / `exitThreadPool`.
+- Web worker WASM bootstrap updated to use canonical module memory.
+- Cache reads now return `undefined` on missing files instead of throwing, and
+  log cache misses with the `persistentId` instead of a stack trace.
+- Updated performance regression baselines and verification key regression
+  fixtures for Mesa.
 
 ## [2.14.0](https://github.com/o1-labs/o1js/compare/c81f31ad0...ff6c201b) - 2026-03-16
 
