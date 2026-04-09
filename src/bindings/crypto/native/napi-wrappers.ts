@@ -28,7 +28,6 @@ import type {
   WasmFqRandomOracles as NapiFqRandomOracles,
   WasmFqShifts as NapiFqShifts,
   WasmFqSrs as NapiFqSrs,
-  LookupInfo as NapiLookupInfo,
   WasmPastaFpLookupTable as NapiPastaFpLookupTable,
   WasmPastaFqLookupTable as NapiPastaFqLookupTable,
   WasmVecVecFp as NapiVecVecFp,
@@ -173,14 +172,31 @@ export type NapiLookupSelector =
   | NapiFpLookupSelectors
   | NapiFqLookupSelectors;
 
-export type { NapiLookupInfo };
+export type NapiLookupPatternsObject = {
+  xor: boolean;
+  lookup: boolean;
+  range_check: boolean;
+  foreign_field_mul: boolean;
+};
+
+export type NapiLookupFeaturesObject = {
+  patterns: NapiLookupPatternsObject;
+  joint_lookup_used: boolean;
+  uses_runtime_tables: boolean;
+};
+
+export type NapiLookupInfoObject = {
+  max_per_row: number;
+  max_joint_size: number;
+  features: NapiLookupFeaturesObject;
+};
 
 export type NapiLookupVerifierIndexShape = {
   joint_lookup_used: boolean;
   lookup_table: NapiPolyComms;
   lookup_selectors: NapiLookupSelectorShape;
   table_ids?: NapiPolyComm | undefined;
-  lookup_info: NapiLookupInfo;
+  lookup_info: NapiLookupInfoObject;
   runtime_tables_selector?: NapiPolyComm | undefined;
 };
 
