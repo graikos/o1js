@@ -18,6 +18,13 @@ This project adheres to
 
 ## [Unreleased](https://github.com/o1-labs/o1js/compare/v3.0.0-mesa.0...HEAD)
 
+### Added
+
+- Native Kimchi access from Node.js with x2 prover performance boost. 
+  https://github.com/o1-labs/o1js/pull/2823
+- Enabled chunking through Native prover enabling x4 larger circuits on Node.js.
+  https://github.com/o1-labs/o1js/pull/2823
+
 ## [3.0.0-mesa.0](https://github.com/o1-labs/o1js/compare/ff6c201b...v3.0.0-mesa.0) - 2026-03-26
 
 This is the first prerelease of o1js targeting the **Mesa** hard fork of the
