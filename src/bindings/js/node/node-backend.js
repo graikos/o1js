@@ -1,10 +1,12 @@
 import os from 'os';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import { WithThreadPool, workers } from '../../../lib/proof-system/workers.js';
-import wasm_ from '../../compiled/node_bindings/kimchi_wasm.cjs';
 let url = import.meta.url;
 let filename = url !== undefined ? fileURLToPath(url) : __filename;
+const require = createRequire(filename);
+const wasm_ = requireKimchiWasm(!isMainThread ? workerData?.memory : undefined);
 
 /**
  * @type {import("../../compiled/node_bindings/kimchi_wasm.cjs")}
@@ -16,6 +18,23 @@ if (typeof globalThis !== 'undefined') {
 }
 
 export { wasm, withThreadPool };
+
+function requireKimchiWasm(memoryOverride) {
+  let modulePath = '../../compiled/node_bindings/kimchi_wasm.cjs';
+  if (memoryOverride === undefined) return require(modulePath);
+
+  let OriginalMemory = WebAssembly.Memory;
+  WebAssembly.Memory = new Proxy(OriginalMemory, {
+    construct(_target, _args, _newTarget) {
+      return memoryOverride;
+    },
+  });
+  try {
+    return require(modulePath);
+  } finally {
+    WebAssembly.Memory = OriginalMemory;
+  }
+}
 
 let workersReadyResolve;
 let workersReady;
