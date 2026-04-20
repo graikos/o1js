@@ -287,8 +287,7 @@ let migrate (hardfork_slot : int) (account_json : string) =
           ("Failed to parse berkeley account json to mesa account: " ^ err)
   in
   let migrated_account =
-    Mina_base.Account.Hardfork.migrate_to_mesa ~hardfork_slot
-      account_berkeley
+    Mina_base.Account.Hardfork.migrate_to_mesa ~hardfork_slot account_berkeley
   in
   Mina_base.Account.Hardfork.to_yojson migrated_account
   |> Yojson.Safe.to_string |> Js.string |> Util.json_parse

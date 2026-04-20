@@ -31,6 +31,12 @@ info "Using Dune profile: ${DUNE_PROFILE}"
 npm run build:wasm:node
 npm run build:jsoo:node
 
+if [ -z "${SKIP_NATIVE_BUILD:-}" ]; then
+    npm run build:native
+else
+    info "Skipping native build (SKIP_NATIVE_BUILD set)"
+fi
+
 npm run build:bindings-transaction-layout
 
 success "Node bindings artifacts build complete"

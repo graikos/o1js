@@ -165,37 +165,37 @@ type Transaction<Proven extends boolean, Signed extends boolean> = TransactionCo
    */
   setFeePerAccountUpdate(newFeePerAccountUpdate: number): TransactionPromise<Proven, false>;
 } & (Proven extends false
-    ? {
-        /**
-         * Initiates the proof generation process for the {@link Transaction}. This asynchronous operation is
-         * crucial for zero-knowledge-based transactions, where proofs are required to validate state transitions.
-         * This can take some time.
-         * @example
-         * ```ts
-         * await transaction.prove();
-         * ```
-         */
-        prove(): Promise<Transaction<true, Signed>>;
-      }
-    : {
-        /** The proofs generated as the result of calling `prove`. */
-        proofs: (Proof<ZkappPublicInput, Empty> | undefined)[];
-      }) &
+  ? {
+    /**
+     * Initiates the proof generation process for the {@link Transaction}. This asynchronous operation is
+     * crucial for zero-knowledge-based transactions, where proofs are required to validate state transitions.
+     * This can take some time.
+     * @example
+     * ```ts
+     * await transaction.prove();
+     * ```
+     */
+    prove(): Promise<Transaction<true, Signed>>;
+  }
+  : {
+    /** The proofs generated as the result of calling `prove`. */
+    proofs: (Proof<ZkappPublicInput, Empty> | undefined)[];
+  }) &
   (Signed extends false
     ? {
-        /**
-         * Signs all {@link AccountUpdate}s included in the {@link Transaction} that require a signature.
-         * {@link AccountUpdate}s that require a signature can be specified with `{AccountUpdate|SmartContract}.requireSignature()`.
-         * @param privateKeys The list of keys that should be used to sign the {@link Transaction}
-         * @returns The {@link Transaction} instance with all required signatures applied.
-         * @example
-         * ```ts
-         * const signedTx = transaction.sign([userPrivateKey]);
-         * console.log('Transaction signed successfully.');
-         * ```
-         */
-        sign(privateKeys: PrivateKey[]): Transaction<Proven, true>;
-      }
+      /**
+       * Signs all {@link AccountUpdate}s included in the {@link Transaction} that require a signature.
+       * {@link AccountUpdate}s that require a signature can be specified with `{AccountUpdate|SmartContract}.requireSignature()`.
+       * @param privateKeys The list of keys that should be used to sign the {@link Transaction}
+       * @returns The {@link Transaction} instance with all required signatures applied.
+       * @example
+       * ```ts
+       * const signedTx = transaction.sign([userPrivateKey]);
+       * console.log('Transaction signed successfully.');
+       * ```
+       */
+      sign(privateKeys: PrivateKey[]): Transaction<Proven, true>;
+    }
     : {});
 
 type PendingTransactionStatus = 'pending' | 'rejected';
@@ -465,29 +465,29 @@ type TransactionPromise<Proven extends boolean, Signed extends boolean> = Promis
   /** Equivalent to calling the resolved `Transaction`'s `send` method. */
   send(): PendingTransactionPromise;
 } & (Proven extends false
-    ? {
-        /**
-         * Calls `prove` upon resolution of the `Transaction`. Returns a
-         * new `TransactionPromise` with the field `proofPromise` containing
-         * a promise which resolves to the proof array.
-         */
-        prove(): TransactionPromise<true, Signed>;
-      }
-    : {
-        /**
-         * If the chain of method calls that produced the current `TransactionPromise`
-         * contains a `prove` call, then this field contains a promise resolving to the
-         * proof array which was output from the underlying `prove` call.
-         */
-        proofs(): Promise<Transaction<true, Signed>['proofs']>;
-      }) &
+  ? {
+    /**
+     * Calls `prove` upon resolution of the `Transaction`. Returns a
+     * new `TransactionPromise` with the field `proofPromise` containing
+     * a promise which resolves to the proof array.
+     */
+    prove(): TransactionPromise<true, Signed>;
+  }
+  : {
+    /**
+     * If the chain of method calls that produced the current `TransactionPromise`
+     * contains a `prove` call, then this field contains a promise resolving to the
+     * proof array which was output from the underlying `prove` call.
+     */
+    proofs(): Promise<Transaction<true, Signed>['proofs']>;
+  }) &
   (Signed extends false
     ? {
-        /** Equivalent to calling the resolved `Transaction`'s `sign` method. */
-        sign(
-          ...args: Parameters<Transaction<Proven, Signed>['sign']>
-        ): TransactionPromise<Proven, true>;
-      }
+      /** Equivalent to calling the resolved `Transaction`'s `sign` method. */
+      sign(
+        ...args: Parameters<Transaction<Proven, Signed>['sign']>
+      ): TransactionPromise<Proven, true>;
+    }
     : {});
 
 function toTransactionPromise<Proven extends boolean, Signed extends boolean>(

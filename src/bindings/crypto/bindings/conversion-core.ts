@@ -1,3 +1,5 @@
+import { MlArray } from '../../../lib/ml/base.js';
+import type * as wasmNamespace from '../../compiled/node_bindings/kimchi_wasm.cjs';
 import type {
   WasmFpGate,
   WasmFpPolyComm,
@@ -5,11 +7,7 @@ import type {
   WasmFqPolyComm,
   WasmGPallas,
   WasmGVesta,
-} from '../../compiled/node_bindings/plonk_wasm.cjs';
-import { OrInfinity, Gate, PolyComm, Wire } from './kimchi-types.js';
-import type * as wasmNamespace from '../../compiled/node_bindings/plonk_wasm.cjs';
-import { MlArray } from '../../../lib/ml/base.js';
-import { mapTuple } from './util.js';
+} from '../../compiled/node_bindings/kimchi_wasm.cjs';
 import {
   WasmAffine,
   affineFromRust,
@@ -17,6 +15,8 @@ import {
   fieldsFromRustFlat,
   fieldsToRustFlat,
 } from './conversion-base.js';
+import { Gate, OrInfinity, PolyComm, Wire } from './kimchi-types.js';
+import { mapTuple } from './util.js';
 
 export {
   ConversionCore,
@@ -26,6 +26,8 @@ export {
   intoRaw,
   mapFromUintArray,
   mapToUint32Array,
+  unwrap,
+  wrap,
 };
 
 // basic conversion functions for each field
