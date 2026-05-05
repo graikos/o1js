@@ -45,11 +45,11 @@ const defaultNetworkConstants: NetworkConstants = {
 type FeePayerSpec =
   | PublicKey
   | {
-      sender: PublicKey;
-      fee?: number | string | UInt64;
-      memo?: string;
-      nonce?: number;
-    }
+    sender: PublicKey;
+    fee?: number | string | UInt64;
+    memo?: string;
+    nonce?: number;
+  }
   | undefined;
 
 type ActionStates = {

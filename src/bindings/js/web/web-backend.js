@@ -1,4 +1,4 @@
-import plonkWasm from '../../../web_bindings/plonk_wasm.js';
+import kimchiWasm from '../../../web_bindings/kimchi_wasm.js';
 import { workerSpec } from './worker-spec.js';
 import { srcFromFunctionModule, inlineWorker, waitForMessage } from './worker-helpers.js';
 import o1jsWebSrc from 'string:../../../web_bindings/o1js_web.bc.js';
@@ -16,10 +16,11 @@ let workerPromise;
  * @type {number | undefined}
  */
 let numWorkers = undefined;
+let wasmThreadPoolRunning = false;
 
 async function initializeBindings() {
-  wasm = plonkWasm();
-  globalThis.plonk_wasm = wasm;
+  wasm = kimchiWasm();
+  globalThis.kimchi_wasm = wasm;
   let init = wasm.default;
 
   const memory = allocateWasmMemoryForUserAgent(navigator.userAgent);
@@ -43,7 +44,7 @@ async function initializeBindings() {
     setTimeout(async () => {
       let worker = inlineWorker(srcFromFunctionModule(mainWorker));
       await workerCall(worker, 'start', { memory, module });
-      overrideBindings(globalThis.plonk_wasm, worker);
+      overrideBindings(globalThis.kimchi_wasm, worker);
       resolve(worker);
     }, 0);
   });
@@ -51,21 +52,24 @@ async function initializeBindings() {
 
 async function initThreadPool() {
   if (workerPromise === undefined) throw Error('need to initialize worker first');
+  if (wasmThreadPoolRunning) return;
   let worker = await workerPromise;
   numWorkers ??= Math.max(1, workers.numWorkers ?? (navigator.hardwareConcurrency ?? 1) - 1);
   await workerCall(worker, 'initThreadPool', numWorkers);
+  wasmThreadPoolRunning = true;
 }
 
 async function exitThreadPool() {
   if (workerPromise === undefined) throw Error('need to initialize worker first');
-  let worker = await workerPromise;
-  await workerCall(worker, 'exitThreadPool');
+  if (!wasmThreadPoolRunning) return;
+  // Keep the pool alive across compile/prove calls.
+  // Explicit teardown can deadlock on some runtime/toolchain combinations.
 }
 
 const withThreadPool = WithThreadPool({ initThreadPool, exitThreadPool });
 
 async function mainWorker() {
-  const wasm = plonkWasm();
+  const wasm = kimchiWasm();
   let init = wasm.default;
 
   let spec = workerSpec(wasm);
@@ -81,15 +85,28 @@ async function mainWorker() {
     for (let i = 0, l = specArgs.length; i < l; i++) {
       let specArg = specArgs[i];
       if (specArg && specArg.__wrap) {
-        // Class info got lost on transfer, rebuild it.
-        resArgs[i] = specArg.__wrap(args[i].__wbg_ptr);
+        // Reconstruct the class wrapper from the raw pointer.
+        // IMPORTANT: Do NOT use specArg.__wrap() here — in wasm-bindgen
+        // >= 0.2.100, __wrap() registers the object with a FinalizationRegistry.
+        // When the worker GC collects these temporary wrappers, the finalizer
+        // frees memory that the main thread still owns, causing use-after-free.
+        // Instead, create a bare prototype wrapper that borrows the pointer.
+        let obj = Object.create(specArg.prototype);
+        obj.__wbg_ptr = args[i].__wbg_ptr;
+        resArgs[i] = obj;
       } else {
         resArgs[i] = args[i];
       }
     }
     let res = wasm[name].apply(wasm, resArgs);
     if (functionSpec.res && functionSpec.res.__wrap) {
-      res = res.__wbg_ptr;
+      // Transfer ownership of the result from the worker's wasm instance.
+      // __destroy_into_raw() unregisters from the worker's FinalizationRegistry
+      // and returns the raw pointer. Without this, the worker's GC would
+      // eventually free the result while the main thread still holds it.
+      res = typeof res.__destroy_into_raw === 'function'
+        ? res.__destroy_into_raw()
+        : res.__wbg_ptr;
     } else if (functionSpec.res && functionSpec.res.there) {
       res = functionSpec.res.there(res);
     }
@@ -116,12 +133,12 @@ async function mainWorker() {
   await init(module, memory);
   postMessage({ type: data.id });
 }
-mainWorker.deps = [plonkWasm, workerSpec, workerExport, onMessage, waitForMessage];
+mainWorker.deps = [kimchiWasm, workerSpec, workerExport, onMessage, waitForMessage];
 
-function overrideBindings(plonk_wasm, worker) {
-  let spec = workerSpec(plonk_wasm);
+function overrideBindings(kimchi_wasm, worker) {
+  let spec = workerSpec(kimchi_wasm);
   for (let key in spec) {
-    plonk_wasm[key] = (...args) => {
+    kimchi_wasm[key] = (...args) => {
       if (spec[key].disabled) throw Error(`Wasm method '${key}' is disabled on the web.`);
       let u32_ptr = wasm.create_zero_u32_ptr();
       worker.postMessage({
@@ -156,8 +173,12 @@ function workerExport(worker, exportObject) {
   for (let key in exportObject) {
     worker.addEventListener('message', async function ({ data }) {
       if (data?.type !== key) return;
-      let result = await exportObject[key](data.message);
-      postMessage({ type: data.id, result });
+      try {
+        let result = await exportObject[key](data.message);
+        postMessage({ type: data.id, result });
+      } catch (error) {
+        postMessage({ type: data.id, error: String(error?.stack ?? error) });
+      }
     });
   }
 }
@@ -166,7 +187,9 @@ async function workerCall(worker, type, message) {
   let id = Math.random();
   let promise = waitForMessage(worker, id);
   worker.postMessage({ type, id, message });
-  return (await promise).result;
+  let response = await promise;
+  if (response.error) throw new Error(response.error);
+  return response.result;
 }
 
 function allocateWasmMemoryForUserAgent(userAgent) {

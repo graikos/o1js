@@ -4,7 +4,7 @@
     "methods": {
       "sha256": {
         "rows": 5036,
-        "digest": "c3952f2bd0dbb6b16ed43add7c57c9c5",
+        "digest": "223d75719ac98942e172f88d77809cdb",
         "proveTime": 20.257220909999997,
         "verifyTime": 1.8148095600000016
       }
@@ -15,7 +15,7 @@
     "methods": {
       "verifyEcdsa": {
         "rows": 46221,
-        "digest": "d0f4f1d987923683410ebeeee0e3cca1",
+        "digest": "c74d1fdd7c7019662c91a4709dbca86f",
         "proveTime": 60.95979367700001,
         "verifyTime": 1.8624347070000076
       }
@@ -26,7 +26,7 @@
     "methods": {
       "verifyEthers": {
         "rows": 46248,
-        "digest": "2278723f3c48ee7041964ebfc58f9f0f",
+        "digest": "fb9c75d82f5bd1852e490ea26ed2e77d",
         "proveTime": 59.80421521099994,
         "verifyTime": 1.949640282999957
       }
@@ -37,7 +37,7 @@
     "methods": {
       "blake2b": {
         "rows": 3937,
-        "digest": "9a34a081e72a974dc8d663e338ba3a58",
+        "digest": "700888074b4af4ce56fb61ad8b4ab6d6",
         "proveTime": 20.959544298,
         "verifyTime": 1.788057316999999
       }
@@ -48,7 +48,7 @@
     "methods": {
       "verifyRsa65537": {
         "rows": 12401,
-        "digest": "5070b93b8bf964733b6f5a696f42ded7",
+        "digest": "a245ac71d2c2e431571858ae2df4feed",
         "proveTime": 25.302830891000006,
         "verifyTime": 1.844899077000009
       }
@@ -92,19 +92,19 @@
     "methods": {
       "rot": {
         "rows": 6,
-        "digest": "335c4b0ef55af40110fd4f76709e629e",
+        "digest": "b751bc57da477ef9541cd530d80d5b9a",
         "proveTime": 20.455568205999995,
         "verifyTime": 1.8412553280000066
       },
       "xor": {
         "rows": 3,
-        "digest": "bf4c612a866451453ba30641230a99d0",
+        "digest": "ffd6599d8b0517e1fd84a91e0a70b4ec",
         "proveTime": 13.647244727000004,
         "verifyTime": 1.814390443000011
       },
       "and": {
         "rows": 4,
-        "digest": "f1f4f53ae5d5201eb5ef683c1c9e8167",
+        "digest": "91579e4dbd536676d7ff5c0596df4635",
         "proveTime": 13.709698655999993,
         "verifyTime": 1.8071147000000056
       }
@@ -120,7 +120,7 @@
       },
       "assertAndAdd": {
         "rows": 23,
-        "digest": "db2a1a1a0b330ba3a2c34a843829edc2",
+        "digest": "657a0a503fc007cc2b88e2b8721ed9ee",
         "proveTime": 19.229850519
       }
     }
@@ -146,7 +146,7 @@
     "methods": {
       "verifyPayroll": {
         "rows": 202,
-        "digest": "677070f76ca9120c9c6129f2f635ac3b",
+        "digest": "b5b687fb26fcab697d74a1242804f61a",
         "proveTime": 20.511479069,
         "verifyTime": 1.8338156819999931
       }
@@ -167,34 +167,34 @@
     "methods": {
       "combinedHash": {
         "rows": 53069,
-        "digest": "91dc95688cf71dea0f2eabf74c4c1de5",
+        "digest": "4aae42cb252e97d85870815b3f72756f",
         "proveTime": 65.502750422,
         "verifyTime": 1.8482163310000324
       }
     }
   },
   "Voting_": {
-    "digest": "2d12b9235eac7fe8188447969463455160abb01ddd682efdd4147fe28fc8c608",
+    "digest": "3e9d12f7ba0d0cf88fb46d1342283cc9ad52df1b319373ca45b5206e2c6c7613",
     "compileTime": 38.209853993,
     "methods": {}
   },
   "Membership_": {
-    "digest": "2dcddd890f32e12d56469f8e1cf25706d9b7c83f12342ade821aff42f18f53e9",
+    "digest": "22ba41a10934cb1c22d578a53d2119546e297f74c62cbe71fd9701107ca479f",
     "compileTime": 11.693168089999999,
     "methods": {}
   },
   "HelloWorld": {
-    "digest": "309ebdd97930d6c753207d62c84147fe540f62d1623a1251f1d0b4f5f8bd400d",
+    "digest": "1bb504e2c546aad139c5cbfc8b5544c25d653573a1f31e9b601293c16eacc526",
     "compileTime": 6.7330193199999995,
     "methods": {}
   },
   "TokenContract": {
-    "digest": "37ad5c458b0b9f5a44650d16fe16200b3fafff89af0c3b4d0ad57eda5df05d54",
+    "digest": "24e4970719219554e59b3cfb556e2154461a901b013ea7fc76011b3a8c1069",
     "compileTime": 10.845228322999995,
     "methods": {}
   },
   "Dex": {
-    "digest": "fee88991bcc3331978a787642273ee02cbfc738949c6daad38c3bab65a8e81e",
+    "digest": "2c89e730fc5fbdb95ddf567c70d84741d5febd3336e28d3cf270e25fc31f9cfc",
     "compileTime": 21.480353653000012,
     "methods": {}
   },
