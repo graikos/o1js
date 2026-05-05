@@ -406,6 +406,15 @@ class Client {
     return { signature, publicKey, data: { zkappCommand: signed, feePayer } };
   }
 
+  /**
+   * Computes the commitment and full commitment of a zkApp transaction from
+   * the mina-signer wrapper input — the same `{ feePayer, zkappCommand }`
+   * shape accepted by {@link signZkappCommand}.
+   *
+   * Validates the fee payer (minimum-fee check, memo length, non-negative
+   * fee/nonce/validUntil) and normalizes the memo before computing
+   * commitments.
+   */
   getZkappCommandCommitments({ feePayer: feePayer_, zkappCommand }: Json.ZkappCommand) {
     let accountUpdates = zkappCommand.accountUpdates;
     let minimumFee = this.getAccountUpdateMinimumFee(accountUpdates);
@@ -422,8 +431,16 @@ class Client {
     return getCommitments(command, this.network);
   }
 
-  getZkappCommandCommitmentsNoCheck({ feePayer: feePayer_, zkappCommand }: Json.ZkappCommand) {
-
+  /**
+   * Computes the commitment and full commitment of a zkApp transaction from a
+   * fully-formed `TransactionJson.ZkappCommand` — the shape produced by
+   * `tx.toJSON()` (after `JSON.parse`).
+   *
+   * Skips fee-payer validation: the input is assumed to be well-formed.
+   * The protocol minimum fee is not enforced here — the network will reject
+   * a too-low fee on submission.
+   */
+  getZkappCommandCommitmentsFromJSON(zkappCommand: TransactionJson.ZkappCommand) {
     return getCommitments(zkappCommand, this.network);
   }
 
